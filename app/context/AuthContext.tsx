@@ -16,6 +16,8 @@ interface AuthContextType {
   logout: () => void;
   addProfile: (formData: object) => void;
   updateProfile: (formData: object) => void;
+  setLoading: (loading: boolean) => void;
+  setIsAuth: (isAuth: boolean) => void;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -187,6 +189,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         profile,
         addProfile,
         updateProfile,
+        setLoading,
+        setIsAuth,
       }}
     >
       {children}
