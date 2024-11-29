@@ -16,10 +16,10 @@ const Login = () => {
     try {
       const response = await login(email, password);
       console.log(response);
-      if (response.message === "You are logged in") {
+      if (response.message === "Login successful") {
         console.log(response.user);
         alert(response.message);
-        router.push("/");
+        router.push("/profile");
       } else if (response.message === "Invalid credentials") {
         alert(response.message);
       }
