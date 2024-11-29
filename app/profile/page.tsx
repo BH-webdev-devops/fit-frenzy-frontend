@@ -15,7 +15,7 @@ export default function Profile() {
     addProfile,
     updateProfile,
   }: // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  any = useAuth();
+    any = useAuth();
   const router = useRouter();
 
   const [profileForm, setProfileForm] = useState({
@@ -74,7 +74,7 @@ export default function Profile() {
       console.log(combinedData);
       console.log(result);
     } else {
-      alert(result.message);
+      alert(result.details);
     }
   };
 

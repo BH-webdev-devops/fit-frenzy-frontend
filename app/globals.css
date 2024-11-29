@@ -19,3 +19,165 @@ body {
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+.workout-card:hover {
+  transform: scale(1.05);
+}
+
+.workout-card h3 {
+  margin-top: 0;
+  color: #0070f3;
+}
+
+.workout-card p {
+  margin: 10px 0;
+  color: #555;
+}
+
+.workout-card p strong {
+  color: #333;
+}
+
+.workout-form {
+  margin: 20px auto;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  width: 300px;
+}
+
+.workout-form h3 {
+  margin-top: 0;
+  color: #0070f3;
+}
+
+.workout-form input,
+.workout-form textarea {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.workout-form button {
+  width: 100%;
+  padding: 10px;
+  font-size: 1em;
+  color: #fff;
+  background-color: #0070f3;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.workout-form button:hover {
+  background-color: #005bb5;
+}
+.workout-container {
+  padding: 20px;
+  background-color: #f5f5f5;
+  color: #333;
+}
+
+.title {
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 2em;
+  color: #444;
+}
+
+button {
+  display: block;
+  margin: 10px auto;
+  padding: 10px 20px;
+  font-size: 1em;
+  color: #fff;
+  background-color: #0070f3;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #005bb5;
+}
+
+.chart-container {
+  margin: 20px auto;
+  width: 80%;
+  max-width: 800px;
+}
+
+.workout-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+}
+
+.workout-card {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  width: 300px;
+  transition: transform 0.2s;
+}
+
+.workout-card:hover {
+  transform: scale(1.05);
+}
+
+.workout-card h3 {
+  margin-top: 0;
+  color: #0070f3;
+}
+
+.workout-card p {
+  margin: 10px 0;
+  color: #555;
+}
+
+.workout-card p strong {
+  color: #333;
+}
+
+.workout-form {
+  margin: 20px auto;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  width: 300px;
+}
+
+.workout-form h3 {
+  margin-top: 0;
+  color: #0070f3;
+}
+
+.workout-form input,
+.workout-form textarea {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.workout-form button {
+  width: 100%;
+  padding: 10px;
+  font-size: 1em;
+  color: #fff;
+  background-color: #0070f3;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.workout-form button:hover {
+  background-color: #005bb5;
+}
