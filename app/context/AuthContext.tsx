@@ -122,7 +122,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
       if (res.ok) {
         setUser(data.user);
-        setProfile(data.profile);
+        setProfile(data.result);
         return { success: true, message: data.message, result: data.result };
       } else {
         console.error("Update failed", data);
