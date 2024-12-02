@@ -1,14 +1,36 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Dialog, DialogPanel } from "@headlessui/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
+import { useAuth } from "../context/AuthContext"; // Import AuthContext
 
-const navigation = [{ name: "Profile", href: "/profile" }, { name: "Workout", href: "/workout" }];
+
+const navigation = [
+  { name: "Exercises", href: "/exercise" },
+  { name: "Recipes", href: "/nutrition" },
+  { name: "My Workouts", href: "/workout" },
+  { name: "My Profile", href: "/profile" },
+];
+
 
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { logout }: any = useAuth();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    setIsLoggedIn(!!token);
+  }, []);
+
+  const handleLogout = () => {
+    logout();
+    localStorage.removeItem("token");
+    setIsLoggedIn(false);
+  };
 
   return (
     <header className="bg-white">
@@ -18,7 +40,7 @@ export default function Navbar() {
       >
         <div className="flex lg:flex-1">
           <Link href="/" className="m-1.5 p-1.5">
-            <p className="text-black">FitFrenzy</p>
+            <p className="text-black text-2xl font-bold">FitFrenzy</p>
           </Link>
         </div>
         <div className="hidden lg:flex lg:gap-x-12">
@@ -26,25 +48,36 @@ export default function Navbar() {
             <a
               key={item.name}
               href={item.href}
-              className="text-sm/6 font-semibold text-gray-900"
+              className="text-lg font-semibold text-gray-900"
             >
               {item.name}
             </a>
           ))}
         </div>
         <div className="flex flex-1 items-center justify-end gap-x-6">
-          <a
-            href="/login"
-            className="hidden text-sm/6 font-semibold text-gray-900 lg:block"
-          >
-            Log in
-          </a>
-          <a
-            href="/register"
-            className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-          >
-            Sign up
-          </a>
+          {!isLoggedIn ? (
+            <>
+              <a
+                href="/login"
+                className="hidden text-lg font-semibold text-gray-900 lg:block"
+              >
+                Log in
+              </a>
+              <a
+                href="/register"
+                className="rounded-md bg-neutral-600 px-4 py-2 text-lg font-semibold text-white shadow-sm hover:bg-neutral-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-600"
+              >
+                Sign up
+              </a>
+            </>
+          ) : (
+            <button
+              onClick={handleLogout}
+              className="rounded-md bg-neutral-600 px-4 py-2 text-lg font-semibold text-white shadow-sm hover:bg-neutral-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-600"
+            >
+              Logout
+            </button>
+          )}
         </div>
         <div className="flex lg:hidden">
           <button
@@ -65,20 +98,22 @@ export default function Navbar() {
         <div className="fixed inset-0 z-10" />
         <DialogPanel className="fixed inset-y-0 right-0 z-10 w-full overflow-y-auto bg-white px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
           <div className="flex items-center gap-x-6">
-            <a href="#" className="-m-1.5 p-1.5">
-              <span className="sr-only">Your Company</span>
+            <Link href="/" className="-m-1.5 p-1.5">
+              <span className="sr-only">FitFrenzy</span>
               <img
-                alt=""
-                src="https://tailwindui.com/plus/img/logos/mark.svg?color=indigo&shade=600"
+                alt="FitFrenzy Logo"
+                src="/logo.png"
                 className="h-8 w-auto"
               />
-            </a>
-            <a
-              href="/register"
-              className="ml-auto rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-            >
-              Sign up
-            </a>
+            </Link>
+            {!isLoggedIn ? (
+              <a
+                href="/register"
+                className="ml-auto rounded-md bg-neutral-600 px-4 py-2 text-lg font-semibold text-white shadow-sm hover:bg-neutral-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-600"
+              >
+                Sign up
+              </a>
+            ) : null}
             <button
               type="button"
               onClick={() => setMobileMenuOpen(false)}
@@ -95,19 +130,28 @@ export default function Navbar() {
                   <a
                     key={item.name}
                     href={item.href}
-                    className="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-gray-900 hover:bg-gray-50"
+                    className="-mx-3 block rounded-lg px-3 py-2 text-lg font-semibold text-gray-900 hover:bg-gray-50"
                   >
                     {item.name}
                   </a>
                 ))}
               </div>
               <div className="py-6">
-                <a
-                  href="/login"
-                  className="-mx-3 block rounded-lg px-3 py-2.5 text-base/7 font-semibold text-gray-900 hover:bg-gray-50"
-                >
-                  Log in
-                </a>
+                {!isLoggedIn ? (
+                  <a
+                    href="/login"
+                    className="-mx-3 block rounded-lg px-3 py-2.5 text-lg font-semibold text-gray-900 hover:bg-gray-50"
+                  >
+                    Log in
+                  </a>
+                ) : (
+                  <button
+                    onClick={handleLogout}
+                    className="-mx-3 block rounded-lg px-3 py-2.5 text-lg font-semibold text-gray-900 hover:bg-gray-50"
+                  >
+                    Logout
+                  </button>
+                )}
               </div>
             </div>
           </div>
