@@ -96,21 +96,21 @@ body {
 }
 
 .workout-card .actions button.edit {
-  background-color: var(--primary-color);
+  background-color: #6A0DAD; /* Dark Purple */
   color: white;
 }
 
 .workout-card .actions button.edit:hover {
-  background-color: var(--button-hover-color);
+  background-color: #8A2BE2;
 }
 
 .workout-card .actions button.delete {
-  background-color: var(--secondary-color);
+  background-color: #B22222;
   color: white;
 }
 
 .workout-card .actions button.delete:hover {
-  background-color: var(--button-hover-color);
+  background-color: #DC143C;
 }
 button {
   display: block;
@@ -181,11 +181,11 @@ button {
 }
 
 .button-container button.add {
-  background-color: var(--secondary-color);
+  background-color: #6A0DAD;
 }
 
 .button-container button.add:hover {
-  background-color: var(--button-hover-color);
+  background-color: #8A2BE2;
 }
 
 .pagination {

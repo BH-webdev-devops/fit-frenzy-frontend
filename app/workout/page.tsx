@@ -38,7 +38,7 @@ export default function Workout() {
     const [editWorkout, setEditWorkout] = useState<Partial<Workout> | null>(null);
     const [showForm, setShowForm] = useState(false);
     const [activitySuggestions, setActivitySuggestions] = useState<string[]>([]);
-    const [deleteWorkout, setDeleteWorkout] = useState<Workout | null>(null);
+    const [filterDate, setFilterDate] = useState('');
 
     const fetchActivitySuggestions = async (category: string, filter: any) => {
         console.log("Fetching activity suggestions");
@@ -66,6 +66,44 @@ export default function Workout() {
         }
     }, [newWorkout.type, editWorkout?.type]);
 
+
+    const fetchFilteredWorkouts = async () => {
+        try {
+            const response = await fetch(`http://localhost:3000/api/workout/filter?filterDate=${filterDate}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `${localStorage.getItem('token')}`,
+                },
+            });
+            const data = await response.json();
+            if (response.ok) {
+                setWorkouts(data.result);
+            } else {
+                console.error(data.message);
+            }
+        } catch (error) {
+            console.error('Error fetching workouts:', error);
+        }
+    };
+
+    useEffect(() => {
+        fetchWorkouts(currentPage);
+    }, []);
+
+    useEffect(() => {
+        if (filterDate) {
+            fetchFilteredWorkouts();
+        } else {
+            fetchWorkouts(currentPage);
+        }
+    }, [filterDate]);
+
+    const handleFilterChange = (event: any) => {
+        if (event.target.value) {
+            setFilterDate(event.target.value);
+        }
+    };
 
 
     const fetchWorkouts = async (page: number) => {
@@ -227,7 +265,7 @@ export default function Workout() {
     };
 
     useEffect(() => {
-        fetchWorkouts();
+        fetchWorkouts(currentPage);
     }, []);
 
     const handleShowChart = () => {
@@ -269,60 +307,147 @@ export default function Workout() {
                         {showChart ? "Hide Chart" : "Show Chart"}
                     </button>
                     <button onClick={handleAddUpdate} className="add">
-                        Add Workout
+                        New Workout
                     </button>
                 </div>
             </div>
+            {(!showForm) && (
+                <div className="filter-container mb-4">
+                    <label htmlFor="filterDate" className="mr-2">Filter by Date</label>
+                    <select id="filterDate" value={filterDate} onChange={handleFilterChange} className="p-2 bg-gray-700 text-white rounded">
+                        <option value="">Select Date Range</option>
+                        <option value="one_week">Last Week</option>
+                        <option value="one_month">Last Month</option>
+                        <option value="three_months">Last 3 Months</option>
+                        <option value="six_months">Last 6 Months</option>
+                        <option value="one_year">Last Year</option>
+                    </select>
+                </div>
+            )
+            }
             {showChart && (
                 <div className="chart-container">
                     <Bar data={chartData} />
                 </div>
             )}
-            <div className="workout-list grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {workouts?.map((workout) => (
-                    <div key={workout.id} className="workout-card">
-                        <h3>{workout.exercise || "No Exercise Specified"}</h3>
-                        <div className="space-y-2">
-                            <div className="flex items-center">
-                                <FaDumbbell className="icon" />
-                                <span>{workout.type}</span>
-                            </div>
-                            <div className="flex items-center">
-                                <FaClock className="icon" />
-                                <span>{workout.duration} minutes</span>
-                            </div>
-                            <div className="flex items-center">
-                                <FaFire className="icon" />
-                                <span>{workout.calories_burnt} calories</span>
-                            </div>
-                            <div className="flex items-center">
-                                <FaCalendarAlt className="icon" />
-                                <span>{new Date(workout.date).toLocaleDateString()}</span>
-                            </div>
-                            <div>
-                                <p>{workout.description || "No Description"}</p>
-                            </div>
+            {showForm && (
+                <div className="workout-form bg-white p-6 rounded-lg shadow-md">
+                    <select
+                        className="w-full p-2 mb-4 border border-gray-300 rounded"
+                        value={editWorkout?.type || newWorkout.type || ""}
+                        onChange={(e) => editWorkout ? setEditWorkout({ ...editWorkout, type: e.target.value }) : setNewWorkout({ ...newWorkout, type: e.target.value })}
+                    >
+                        <option value="" disabled>Select Exercise Type</option>
+                        <option value="cycling">Cycling</option>
+                        <option value="running">Running</option>
+                        <option value="walking">Walking</option>
+                        <option value="swimming">Swimming</option>
+                        <option value="hiking">Hiking</option>
+                        <option value="aerobics">Aerobics/Yoga/Dance</option>
+                        <option value="sports">Sports</option>
+                        <option value="hobbies">Hobbies</option>
+                        <option value="gym">Gym</option>
+                        <option value="other">Other</option>
+                    </select>
+                    <input className="w-full p-2 mb-4 border border-gray-300 rounded text-black"
+                        type="text"
+                        placeholder="Exercise"
+                        value={editWorkout?.exercise || newWorkout.exercise || ""}
+                        onChange={(e) => {
+                            const value = e.target.value;
+                            editWorkout ? setEditWorkout({ ...editWorkout, exercise: value }) : setNewWorkout({ ...newWorkout, exercise: value });
+                            fetchActivitySuggestions(newWorkout.type || editWorkout?.type || '', value);
+                        }}
+                        list="activity-suggestions"
+                    />
+                    <datalist id="activity-suggestions">
+                        {activitySuggestions.map((activity, index) => (
+                            <option key={index} value={activity} />
+                        ))}
+                    </datalist>
+                    <input className="w-full p-2 mb-4 border border-gray-300 rounded"
+                        type="number"
+                        placeholder="Duration"
+                        value={editWorkout?.duration || newWorkout.duration || ""}
+                        onChange={(e) => editWorkout ? setEditWorkout({ ...editWorkout, duration: parseInt(e.target.value) }) : setNewWorkout({ ...newWorkout, duration: parseInt(e.target.value) })}
+                    />
+                    <input className="w-full p-2 mb-4 border border-gray-300 rounded"
+                        type="date"
+                        placeholder="Date"
+                        value={(editWorkout?.date instanceof Date ? editWorkout.date.toISOString().split('T')[0] : editWorkout?.date) || (newWorkout.date instanceof Date ? newWorkout.date.toISOString().split('T')[0] : newWorkout.date) || new Date().toISOString().split('T')[0]}
+                        onChange={(e) => editWorkout ? setEditWorkout({ ...editWorkout, date: new Date(e.target.value) }) : setNewWorkout({ ...newWorkout, date: new Date(e.target.value) })}
+                    />
+                    <textarea className="w-full p-2 mb-4 border border-gray-300 rounded"
+                        placeholder="Description"
+                        value={editWorkout?.description || newWorkout.description || ""}
+                        onChange={(e) => editWorkout ? setEditWorkout({ ...editWorkout, description: e.target.value }) : setNewWorkout({ ...newWorkout, description: e.target.value })}
+                    />
+                    {editWorkout ? (
+                        <div className="edit-buttons flex justify-between bg-grey">
+                            <button onClick={handleUpdateWorkout}>Save</button>
+                            <button onClick={handleCancelEdit}>Cancel</button>
                         </div>
-                        <div className="actions">
-                            <button onClick={() => handleEditWorkout(workout)} className="edit">
-                                <FaEdit />
-                            </button>
-                            <button onClick={() => handleDeleteWorkout(workout)} className="delete">
-                                <FaTrash />
-                            </button>
+                    ) : (
+
+                        <div className="edit-buttons flex justify-between bg-black">
+                            <button onClick={handleAddWorkout}>Add</button>
+                            <button onClick={handleCancelAdd}>Cancel</button>
                         </div>
+
+
+                    )}
+
+                </div>
+            )}
+            {(!editWorkout && !showForm) &&
+                (<div>
+                    <div className="workout-list grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {!editWorkout && !showForm && workouts?.map((workout) => (
+                            <div key={workout.id} className="workout-card">
+                                <h3>{workout.exercise || "No Exercise Specified"}</h3>
+                                <div className="space-y-2">
+                                    <div className="flex items-center">
+                                        <FaDumbbell className="icon" />
+                                        <span>{workout.type}</span>
+                                    </div>
+                                    <div className="flex items-center">
+                                        <FaClock className="icon" />
+                                        <span>{workout.duration} minutes</span>
+                                    </div>
+                                    <div className="flex items-center">
+                                        <FaFire className="icon" />
+                                        <span>{workout.calories_burnt} calories</span>
+                                    </div>
+                                    <div className="flex items-center">
+                                        <FaCalendarAlt className="icon" />
+                                        <span>{new Date(workout.date).toLocaleDateString()}</span>
+                                    </div>
+                                    <div>
+                                        <p>{workout.description || "No Description"}</p>
+                                    </div>
+                                </div>
+                                <div className="actions">
+                                    <button onClick={() => handleEditWorkout(workout)} className="edit">
+                                        <FaEdit />
+                                    </button>
+                                    <button onClick={() => handleDeleteWorkout(workout)} className="delete">
+                                        <FaTrash />
+                                    </button>
+                                </div>
+                            </div>
+                        ))}
                     </div>
-                ))}
-            </div>
-            <div className="pagination flex justify-center mt-6">
-                <button onClick={handlePreviousPage} disabled={currentPage == 1} className="px-4 py-2 bg-gray-300 text-black rounded hover:bg-gray-400 transition-colors duration-300">
-                    Previous
-                </button>
-                <span className="text-black mx-4">Page {currentPage} of {totalPages}</span>
-                <button onClick={handleNextPage} disabled={currentPage == totalPages} className="px-4 py-2 bg-gray-300 text-black rounded hover:bg-gray-400 transition-colors duration-300">
-                    Next
-                </button>
-            </div>
+
+                    <div className="pagination flex justify-center mt-6">
+                        <button onClick={handlePreviousPage} disabled={currentPage == 1} className="px-4 py-2 bg-gray-300 text-black rounded hover:bg-gray-400 transition-colors duration-300">
+                            Previous
+                        </button>
+                        <span className="text-black mx-4">Page {currentPage} of {totalPages}</span>
+                        <button onClick={handleNextPage} disabled={currentPage == totalPages} className="px-4 py-2 bg-gray-300 text-black rounded hover:bg-gray-400 transition-colors duration-300">
+                            Next
+                        </button>
+                    </div>
+                </div>)}
         </div>
-    );
-}
+    )
+};
