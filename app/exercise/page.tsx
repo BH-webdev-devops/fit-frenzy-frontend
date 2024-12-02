@@ -57,13 +57,12 @@ export default function Exercise() {
     [YOUTUBE_API_KEY, router, setIsAuth]
   );
 
-  // Debounced search while typing
   useEffect(() => {
     const delayDebounce = setTimeout(() => {
       if (searchQuery.trim()) {
         fetchExercises(searchQuery);
       }
-    }, 500); // Adjust debounce delay as needed
+    }, 500);
     return () => clearTimeout(delayDebounce);
   }, [searchQuery, fetchExercises]);
 
@@ -98,7 +97,7 @@ export default function Exercise() {
                 <ReactPlayer
                   url={`https://www.youtube.com/watch?v=${video.videoId}`}
                   width="100%"
-                  height="100%" // Adjusted height for video cards
+                  height="100%"
                   className="rounded-lg overflow-hidden"
                 />
                 <h3 className="text-lg font-semibold mt-4 text-gray-800 text-center truncate">
