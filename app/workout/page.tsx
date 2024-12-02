@@ -3,6 +3,7 @@ import { useAuth } from "../context/AuthContext";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Bar } from "react-chartjs-2";
+import { FaDumbbell, FaClock, FaFire, FaCalendarAlt, FaEdit, FaTrash } from 'react-icons/fa';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
@@ -19,7 +20,6 @@ interface Workout {
     calories_burnt: number;
 }
 
-
 export default function Workout() {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const {
@@ -31,21 +31,51 @@ export default function Workout() {
     const router = useRouter();
 
     const [workouts, setWorkouts] = useState<Workout[] | null>(null);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
     const [showChart, setShowChart] = useState(false);
     const [newWorkout, setNewWorkout] = useState<Partial<Workout>>({})
     const [editWorkout, setEditWorkout] = useState<Partial<Workout> | null>(null);
     const [showForm, setShowForm] = useState(false);
+    const [activitySuggestions, setActivitySuggestions] = useState<string[]>([]);
+    const [deleteWorkout, setDeleteWorkout] = useState<Workout | null>(null);
+
+    const fetchActivitySuggestions = async (category: string, filter: any) => {
+        console.log("Fetching activity suggestions");
+        const token = localStorage.getItem("token");
+        try {
+            const response = await fetch(`http://localhost:3000/api/workout/activity?category=${category}&filter=${filter}`, {
+                method: "GET",
+                headers: { Authorization: `${token}` }, // Ensure Bearer token format
+            });
+            if (response.ok) {
+                const data = await response.json();
+                setActivitySuggestions(data);
+            } else {
+                console.error('Error fetching activity suggestions:', response.status, response.statusText);
+            }
+            console.log("Activity Suggestions:", activitySuggestions);
+        } catch (error) {
+            console.error('Error fetching activity suggestions:', error);
+        }
+    };
+
+    useEffect(() => {
+        if (newWorkout.type || editWorkout?.type) {
+            fetchActivitySuggestions(newWorkout.type || editWorkout?.type || '', '');
+        }
+    }, [newWorkout.type, editWorkout?.type]);
 
 
 
-    const fetchWorkouts = async () => {
+    const fetchWorkouts = async (page: number) => {
         console.log("fetching workouts");
         const token = localStorage.getItem("token");
         console.log("Token:", token); // Debugging log
 
         if (token) {
             try {
-                const res = await fetch(`http://localhost:3000/api/workout`, {
+                const res = await fetch(`http://localhost:3000/api/workout?page=${page}&limit=10`, {
                     method: "GET",
                     headers: { Authorization: `${token}` }, // Ensure Bearer token format
                 });
@@ -54,6 +84,8 @@ export default function Workout() {
                     const data = await res.json();
                     console.log("Fetched data:", data);
                     setWorkouts(data.result);
+                    setCurrentPage(data.pagination.currentPage);
+                    setTotalPages(data.pagination.totalPages);
                 } else {
                     const errorText = await res.text();
                     console.log(res)
@@ -67,6 +99,22 @@ export default function Workout() {
             console.error("No token found");
         }
     }
+
+    useEffect(() => {
+        fetchWorkouts(currentPage);
+    }, [currentPage]);
+
+    const handlePreviousPage = () => {
+        if (currentPage > 1) {
+            setCurrentPage(currentPage - 1);
+        }
+    };
+
+    const handleNextPage = () => {
+        if (currentPage < totalPages) {
+            setCurrentPage(currentPage + 1);
+        }
+    };
 
     const handleAddWorkout = async () => {
         const token = localStorage.getItem("token");
@@ -82,7 +130,7 @@ export default function Workout() {
                 });
 
                 if (res.ok) {
-                    fetchWorkouts();
+                    fetchWorkouts(currentPage);
                     setNewWorkout({});
                     setShowForm(false);
                 } else {
@@ -103,6 +151,40 @@ export default function Workout() {
         setShowForm(true);
     };
 
+    const handleDeleteWorkout = async (workout: Workout) => {
+        const token = localStorage.getItem("token");
+        if (!workout.id) {
+            alert("Workout ID is required");
+            return;
+        }
+
+        const confirmDelete = window.confirm("Are you sure you want to delete this workout?");
+        if (!confirmDelete) {
+            return;
+        }
+
+        try {
+            const response = await fetch(`http://localhost:3000/api/workout/${workout.id}`, {
+                method: 'DELETE',
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `${token}`
+                }
+            });
+
+            if (response.ok) {
+                // Update the state to remove the deleted workout
+                setWorkouts((prevWorkouts) => prevWorkouts ? prevWorkouts.filter((w) => w.id !== workout.id) : []);
+                alert("Workout deleted successfully");
+            } else {
+                alert("Failed to delete workout");
+            }
+        } catch (error) {
+            console.error("Error deleting workout:", error);
+            alert("An error occurred while deleting the workout");
+        }
+    };
+
     const handleUpdateWorkout = async () => {
         const token = localStorage.getItem("token");
         console.log("Token for update:", token); // Debugging log
@@ -120,7 +202,7 @@ export default function Workout() {
                 });
 
                 if (res.ok) {
-                    fetchWorkouts();
+                    fetchWorkouts(currentPage);
                     setEditWorkout(null);
                     setShowForm(false);
                 } else {
@@ -179,84 +261,67 @@ export default function Workout() {
     };
 
     return (
-        <div className="workout-container">
-            <div className="button-container flex" >
-                <h2 className="title justify-center">Workouts</h2>
-                <button onClick={handleShowChart}>
-                    {showChart ? "Hide Chart" : "Show Chart"}
-                </button>
-                <button onClick={handleAddUpdate}>
-                    {"Add Workout"}
-                </button>
-            </div>
-            {showForm && (
-                <div className="workout-form">
-                    {/* <h3>{editWorkout ? "Edit Workout" : "Add Workout"}</h3> */}
-                    <input
-                        type="text"
-                        placeholder="Exercise"
-                        value={editWorkout?.exercise || newWorkout.exercise || ""}
-                        onChange={(e) => editWorkout ? setEditWorkout({ ...editWorkout, exercise: e.target.value }) : setNewWorkout({ ...newWorkout, exercise: e.target.value })}
-                    />
-                    <input
-                        type="text"
-                        placeholder="Type"
-                        value={editWorkout?.type || newWorkout.type || ""}
-                        onChange={(e) => editWorkout ? setEditWorkout({ ...editWorkout, type: e.target.value }) : setNewWorkout({ ...newWorkout, type: e.target.value })}
-                    />
-                    <input
-                        type="number"
-                        placeholder="Duration"
-                        value={editWorkout?.duration || newWorkout.duration || ""}
-                        onChange={(e) => editWorkout ? setEditWorkout({ ...editWorkout, duration: parseInt(e.target.value) }) : setNewWorkout({ ...newWorkout, duration: parseInt(e.target.value) })}
-                    />
-                    <input
-                        type="date"
-                        placeholder="Date"
-                        value={(editWorkout?.date instanceof Date ? editWorkout.date.toISOString() : editWorkout?.date) || (newWorkout.date instanceof Date ? newWorkout.date.toISOString() : newWorkout.date) || new Date().toISOString()}
-                        onChange={(e) => editWorkout ? setEditWorkout({ ...editWorkout, date: new Date(e.target.value) }) : setNewWorkout({ ...newWorkout, date: new Date(e.target.value) })}
-                    />
-                    <textarea
-                        placeholder="Description"
-                        value={editWorkout?.description || newWorkout.description || ""}
-                        onChange={(e) => editWorkout ? setEditWorkout({ ...editWorkout, description: e.target.value }) : setNewWorkout({ ...newWorkout, description: e.target.value })}
-                    />
-                    {editWorkout ? (
-                        <div className="edit-buttons">
-                            <button onClick={handleUpdateWorkout}>Save</button>
-                            <button onClick={handleCancelEdit}>Cancel</button>
-                        </div>
-                    ) : (
-
-                        <div className="edit-buttons">
-                            <button onClick={handleAddWorkout}>Add</button>
-                            <button onClick={handleCancelAdd}>Cancel</button>
-                        </div>
-
-
-                    )}
-
+        <div className="container mx-auto p-4">
+            <div className="button-container">
+                <h2 className="title">Workouts</h2>
+                <div className="buttons">
+                    <button onClick={handleShowChart}>
+                        {showChart ? "Hide Chart" : "Show Chart"}
+                    </button>
+                    <button onClick={handleAddUpdate} className="add">
+                        Add Workout
+                    </button>
                 </div>
-            )}
+            </div>
             {showChart && (
                 <div className="chart-container">
                     <Bar data={chartData} />
                 </div>
             )}
-            <div className="workout-list">
-                {!editWorkout && workouts?.map((workout: Workout) => (
+            <div className="workout-list grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {workouts?.map((workout) => (
                     <div key={workout.id} className="workout-card">
                         <h3>{workout.exercise || "No Exercise Specified"}</h3>
-                        <p><strong>Type:</strong> {workout.type}</p>
-                        <p><strong>Description:</strong> {workout.description || "No Description"}</p>
-                        <p><strong>Duration:</strong> {workout.duration} minutes</p>
-                        <p><strong>Calories Burnt:</strong> {workout.calories_burnt}</p>
-                        <p><strong>Date:</strong> {new Date(workout.date).toLocaleDateString()}</p>
-                        <button onClick={() => handleEditWorkout(workout)}>
-                            Edit
-                        </button>
+                        <div className="space-y-2">
+                            <div className="flex items-center">
+                                <FaDumbbell className="icon" />
+                                <span>{workout.type}</span>
+                            </div>
+                            <div className="flex items-center">
+                                <FaClock className="icon" />
+                                <span>{workout.duration} minutes</span>
+                            </div>
+                            <div className="flex items-center">
+                                <FaFire className="icon" />
+                                <span>{workout.calories_burnt} calories</span>
+                            </div>
+                            <div className="flex items-center">
+                                <FaCalendarAlt className="icon" />
+                                <span>{new Date(workout.date).toLocaleDateString()}</span>
+                            </div>
+                            <div>
+                                <p>{workout.description || "No Description"}</p>
+                            </div>
+                        </div>
+                        <div className="actions">
+                            <button onClick={() => handleEditWorkout(workout)} className="edit">
+                                <FaEdit />
+                            </button>
+                            <button onClick={() => handleDeleteWorkout(workout)} className="delete">
+                                <FaTrash />
+                            </button>
+                        </div>
                     </div>
                 ))}
+            </div>
+            <div className="pagination flex justify-center mt-6">
+                <button onClick={handlePreviousPage} disabled={currentPage == 1} className="px-4 py-2 bg-gray-300 text-black rounded hover:bg-gray-400 transition-colors duration-300">
+                    Previous
+                </button>
+                <span className="text-black mx-4">Page {currentPage} of {totalPages}</span>
+                <button onClick={handleNextPage} disabled={currentPage == totalPages} className="px-4 py-2 bg-gray-300 text-black rounded hover:bg-gray-400 transition-colors duration-300">
+                    Next
+                </button>
             </div>
         </div>
     );

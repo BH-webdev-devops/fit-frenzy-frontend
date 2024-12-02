@@ -3,181 +3,195 @@
 @tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    /* --background: #0a0a0a; */
-    --foreground: #ededed;
-  }
+  --primary-color: #1E90FF;
+  --secondary-color: #32CD32;
+  --accent-color: #FFD700;
+  --background-color:  #1E1E1E;
+  --card-background-color: #333333;
+  --text-color: #E0E0E0;
+  --button-hover-color: #333333;
 }
 
 body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  font-family: 'Roboto', sans-serif;
+  margin: 0;
+  padding: 0;
 }
 
-.workout-card:hover {
-  transform: scale(1.05);
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
 }
 
-.workout-card h3 {
-  margin-top: 0;
-  color: #0070f3;
-}
-
-.workout-card p {
-  margin: 10px 0;
-  color: #555;
-}
-
-.workout-card p strong {
-  color: #333;
-}
-
-.workout-form {
-  margin: 20px auto;
-  padding: 20px;
-  background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  width: 300px;
-}
-
-.workout-form h3 {
-  margin-top: 0;
-  color: #0070f3;
-}
-
-.workout-form input,
-.workout-form textarea {
-  width: 100%;
-  padding: 10px;
-  margin: 10px 0;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-}
-
-.workout-form button {
-  width: 100%;
-  padding: 10px;
-  font-size: 1em;
-  color: #fff;
-  background-color: #0070f3;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.workout-form button:hover {
-  background-color: #005bb5;
-}
-.workout-container {
-  padding: 20px;
-  background-color: #f5f5f5;
-  color: #333;
-}
-
-.title {
+.header {
+  background-color: var(--primary-color);
+  color: white;
+  padding: 1rem;
   text-align: center;
-  margin-bottom: 20px;
-  font-size: 2em;
-  color: #444;
-}
-
-button {
-  display: block;
-  margin: 10px auto;
-  padding: 10px 20px;
-  font-size: 1em;
-  color: #fff;
-  background-color: #0070f3;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-button:hover {
-  background-color: #005bb5;
-}
-
-.chart-container {
-  margin: 20px auto;
-  width: 80%;
-  max-width: 800px;
+  font-size: 1.5rem;
+  font-weight: bold;
 }
 
 .workout-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
-  justify-content: center;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
 }
 
 .workout-card {
-  background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  padding: 20px;
-  width: 300px;
-  transition: transform 0.2s;
+  background-color: var(--card-background-color);
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
+  transition: transform 0.3s, box-shadow 0.3s;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeInUp 0.5s forwards;
+}
+
+@keyframes fadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .workout-card:hover {
-  transform: scale(1.05);
+  transform: translateY(-5px);
+  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
 }
 
 .workout-card h3 {
-  margin-top: 0;
-  color: #0070f3;
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
 }
 
 .workout-card p {
-  margin: 10px 0;
-  color: #555;
+  margin-bottom: 0.5rem;
 }
 
-.workout-card p strong {
-  color: #333;
+.workout-card .icon {
+  margin-right: 0.5rem;
+  color: var(--primary-color);
 }
 
-.workout-form {
-  margin: 20px auto;
-  padding: 20px;
-  background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  width: 300px;
+.workout-card .actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1rem;
 }
 
-.workout-form h3 {
-  margin-top: 0;
-  color: #0070f3;
+.workout-card .actions button {
+  padding: 0.5rem 1rem;
+  border-radius: 0.25rem;
+  transition: background-color 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.workout-form input,
-.workout-form textarea {
-  width: 100%;
-  padding: 10px;
-  margin: 10px 0;
-  border: 1px solid #ccc;
-  border-radius: 5px;
+.workout-card .actions button.edit {
+  background-color: var(--primary-color);
+  color: white;
 }
 
-.workout-form button {
-  width: 100%;
-  padding: 10px;
-  font-size: 1em;
-  color: #fff;
-  background-color: #0070f3;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
+.workout-card .actions button.edit:hover {
+  background-color: var(--button-hover-color);
 }
 
-.workout-form button:hover {
-  background-color: #005bb5;
+.workout-card .actions button.delete {
+  background-color: var(--secondary-color);
+  color: white;
+}
+
+.workout-card .actions button.delete:hover {
+  background-color: var(--button-hover-color);
+}
+
+.button-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background-color: var(--card-background-color);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.button-container h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.button-container .buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+@media (min-width: 768px) {
+  .button-container {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+
+  .button-container .buttons {
+    flex-direction: row;
+    gap: 1rem;
+  }
+}
+
+.button-container button {
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  background-color: var(--primary-color);
+  color: white;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: background-color 0.3s;
+}
+
+.button-container button:hover {
+  background-color: var(--button-hover-color);
+}
+
+.button-container button.add {
+  background-color: var(--secondary-color);
+}
+
+.button-container button.add:hover {
+  background-color: var(--button-hover-color);
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 2rem;
+}
+
+.pagination button {
+  padding: 0.5rem 1rem;
+  margin: 0 0.5rem;
+  border-radius: 0.25rem;
+  background-color: var(--primary-color);
+  color: white;
+  transition: background-color 0.3s;
+}
+
+.pagination button:hover {
+  background-color: var(--button-hover-color);
+}
+
+.pagination span {
+  font-size: 1rem;
+  color: var(--text-color);
 }
