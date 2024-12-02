@@ -6,12 +6,14 @@ import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import { useAuth } from "../context/AuthContext"; // Import AuthContext
 
+
 const navigation = [
   { name: "Exercises", href: "/exercise" },
   { name: "Recipes", href: "/nutrition" },
   { name: "My Workouts", href: "/workout" },
   { name: "My Profile", href: "/profile" },
 ];
+
 
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
