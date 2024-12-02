@@ -94,14 +94,10 @@ button {
   padding: 10px 20px;
   font-size: 1em;
   color: #fff;
-  background-color: #0070f3;
+  /* background-color: rgb(64 64 64); */
   border: none;
   border-radius: 5px;
   cursor: pointer;
-}
-
-button:hover {
-  background-color: #005bb5;
 }
 
 .chart-container {
