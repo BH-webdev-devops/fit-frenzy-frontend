@@ -17,7 +17,7 @@ export default function Home() {
         </h1>
         <p className="text-lg md:text-xl mb-8">
           Join our vibrant community dedicated to helping you achieve your
-          fitness goals. Whether you're just starting your journey or are a
+          fitness goals. Whether you are just starting your journey or are a
           seasoned fitness enthusiast, FitFrenzy has something for you!
         </p>
         <a
