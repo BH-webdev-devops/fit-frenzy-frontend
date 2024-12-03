@@ -8,6 +8,7 @@ const Register = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { register }: any = useAuth();
   const router = useRouter();
 
@@ -16,8 +17,7 @@ const Register = () => {
     try {
       const response = await register(name, email, password);
       if (response.message === "User registered successfully") {
-        alert(response.message);
-        router.push("/");
+        router.push("/login");
       } else if (response.message === "User already exists") {
         alert(response.message);
       }
@@ -28,10 +28,10 @@ const Register = () => {
 
   return (
     <>
-      <div className="flex min-h-screen w-full flex-1 flex-col justify-center bg-neutral-600 px-6 lg:px-8">
+      <div className="flex min-h-screen w-full flex-1 flex-col justify-center bg-neutral-800 px-6 lg:px-8">
         <div className="mt-[-2rem] sm:mx-auto sm:w-full sm:max-w-sm">
           <h2 className="mt-10 text-center text-3xl font-bold tracking-tight text-white">
-            Join FitFrenzy family
+            Join FitFrenzy Family
           </h2>
         </div>
 

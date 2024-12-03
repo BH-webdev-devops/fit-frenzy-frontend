@@ -7,7 +7,7 @@ import { useAuth } from "../context/AuthContext";
 import { useState, useEffect, useCallback } from "react";
 
 export default function Exercise() {
-  const { setIsAuth }: any = useAuth();
+  const { setIsAuth, isLoggedIn }: any = useAuth();
   const router = useRouter();
 
   const YOUTUBE_API_KEY = "AIzaSyBAMPCWsBBl-sygmeX2nJmG_op6VFI8Yfo";
@@ -20,7 +20,7 @@ export default function Exercise() {
   const fetchExercises = useCallback(
     async (query: string) => {
       const token = localStorage.getItem("token");
-      if (token) {
+      if (token && isLoggedIn) {
         setLoadingState(true);
         try {
           const res = await fetch(
@@ -40,13 +40,14 @@ export default function Exercise() {
             setIsAuth(true);
             setExercises(videos);
           } else {
-            router.push("/register");
+            router.push("/login");
             console.error("Failed to fetch videos");
             setIsAuth(false);
           }
         } catch (err) {
           setIsAuth(false);
           console.error(`Error fetching videos: ${err}`);
+          router.push("/login");
         } finally {
           setLoadingState(false);
         }
@@ -67,11 +68,15 @@ export default function Exercise() {
   }, [searchQuery, fetchExercises]);
 
   useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token && !isLoggedIn) {
+      router.push("/login");
+    }
     fetchExercises(searchQuery);
-  }, []);
+  }, [isLoggedIn]);
 
   return (
-    <div className="bg-neutral-700 min-h-screen py-10 px-4 flex flex-col items-center">
+    <div className="bg-neutral-800 min-h-screen py-10 px-4 flex flex-col items-center">
       <h1 className="text-3xl font-bold text-center mb-8 text-white">
         Find a perfect workout for today!
       </h1>

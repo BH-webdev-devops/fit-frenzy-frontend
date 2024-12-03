@@ -17,8 +17,6 @@ const Login = () => {
       const response = await login(email, password);
       console.log(response);
       if (response.message === "Login successful") {
-        console.log(response.user);
-        alert(response.message);
         router.push("/profile");
       } else if (response.message === "Invalid credentials") {
         alert(response.message);
@@ -30,7 +28,7 @@ const Login = () => {
 
   return (
     <>
-      <div className="flex min-h-screen w-full flex-1 flex-col justify-center bg-neutral-600 px-6 lg:px-8">
+      <div className="flex min-h-screen w-full flex-1 flex-col justify-center bg-neutral-800 px-6 lg:px-8">
         <div className="mt-[-2rem] sm:mx-auto sm:w-full sm:max-w-sm">
           <h2 className="mt-10 text-center text-3xl font-bold tracking-tight text-white">
             Welcome Back!
@@ -53,7 +51,6 @@ const Login = () => {
                   type="email"
                   required
                   onChange={(e) => setEmail(e.target.value)}
-                  autoComplete="email"
                   className="block w-full rounded-md border-0 py-3 px-4 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-neutral-500"
                 />
               </div>
@@ -73,7 +70,6 @@ const Login = () => {
                   type="password"
                   required
                   onChange={(e) => setPassword(e.target.value)}
-                  autoComplete="current-password"
                   className="block w-full rounded-md border-0 py-3 px-4 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-neutral-500"
                 />
               </div>
