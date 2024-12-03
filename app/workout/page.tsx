@@ -314,7 +314,7 @@ export default function Workout() {
             {(!showForm) && (
                 <div className="filter-container mb-4">
                     <label htmlFor="filterDate" className="mr-2">Filter by Date</label>
-                    <select id="filterDate" value={filterDate} onChange={handleFilterChange} className="p-2 bg-gray-700 text-white rounded">
+                    <select id="filterDate" value={filterDate} onChange={handleFilterChange} className="p-3 bg-gray-700 text-white rounded">
                         <option value="">Select Date Range</option>
                         <option value="one_week">Last Week</option>
                         <option value="one_month">Last Month</option>
@@ -331,9 +331,9 @@ export default function Workout() {
                 </div>
             )}
             {showForm && (
-                <div className="workout-form bg-white p-6 rounded-lg shadow-md">
+                <div className="workout-form bg-blue-100 p-8 rounded-lg shadow-lg max-w-lg mx-auto">
                     <select
-                        className="w-full p-2 mb-4 border border-gray-300 rounded"
+                        className="w-full p-3 mb-4 border border-gray-300 rounded"
                         value={editWorkout?.type || newWorkout.type || ""}
                         onChange={(e) => editWorkout ? setEditWorkout({ ...editWorkout, type: e.target.value }) : setNewWorkout({ ...newWorkout, type: e.target.value })}
                     >
@@ -349,9 +349,9 @@ export default function Workout() {
                         <option value="gym">Gym</option>
                         <option value="other">Other</option>
                     </select>
-                    <input className="w-full p-2 mb-4 border border-gray-300 rounded text-black"
+                    <input className="w-full p-3 mb-4 border border-gray-300 rounded text-black"
                         type="text"
-                        placeholder="Exercise"
+                        placeholder="Running 5 miles"
                         value={editWorkout?.exercise || newWorkout.exercise || ""}
                         onChange={(e) => {
                             const value = e.target.value;
@@ -365,33 +365,33 @@ export default function Workout() {
                             <option key={index} value={activity} />
                         ))}
                     </datalist>
-                    <input className="w-full p-2 mb-4 border border-gray-300 rounded"
+                    <input className="w-full p-3 mb-4 border border-gray-300 rounded"
                         type="number"
-                        placeholder="Duration"
+                        placeholder="Duration(mins): 40"
                         value={editWorkout?.duration || newWorkout.duration || ""}
                         onChange={(e) => editWorkout ? setEditWorkout({ ...editWorkout, duration: parseInt(e.target.value) }) : setNewWorkout({ ...newWorkout, duration: parseInt(e.target.value) })}
                     />
-                    <input className="w-full p-2 mb-4 border border-gray-300 rounded"
+                    <input className="w-full p-3 mb-4 border border-gray-300 rounded"
                         type="date"
                         placeholder="Date"
                         value={(editWorkout?.date instanceof Date ? editWorkout.date.toISOString().split('T')[0] : editWorkout?.date) || (newWorkout.date instanceof Date ? newWorkout.date.toISOString().split('T')[0] : newWorkout.date) || new Date().toISOString().split('T')[0]}
                         onChange={(e) => editWorkout ? setEditWorkout({ ...editWorkout, date: new Date(e.target.value) }) : setNewWorkout({ ...newWorkout, date: new Date(e.target.value) })}
                     />
-                    <textarea className="w-full p-2 mb-4 border border-gray-300 rounded"
-                        placeholder="Description"
+                    <textarea className="w-full p-3 mb-4 border border-gray-300 rounded"
+                        placeholder="Description: Morning run in the park"
                         value={editWorkout?.description || newWorkout.description || ""}
                         onChange={(e) => editWorkout ? setEditWorkout({ ...editWorkout, description: e.target.value }) : setNewWorkout({ ...newWorkout, description: e.target.value })}
                     />
                     {editWorkout ? (
-                        <div className="edit-buttons flex justify-between bg-grey">
-                            <button onClick={handleUpdateWorkout}>Save</button>
-                            <button onClick={handleCancelEdit}>Cancel</button>
+                        <div className="edit-buttons flex justify-between mt-4">
+                            <button className="btn btn-primary w-1/2 ml-2" onClick={handleUpdateWorkout}>Save</button>
+                            <button className="btn btn-secondary w-1/2 ml-2" onClick={handleCancelEdit}>Cancel</button>
                         </div>
                     ) : (
 
-                        <div className="edit-buttons flex justify-between bg-black">
-                            <button onClick={handleAddWorkout}>Add</button>
-                            <button onClick={handleCancelAdd}>Cancel</button>
+                        <div className="edit-buttons flex justify-between mt-4">
+                            <button className="btn btn-primary w-1/2 ml-2" onClick={handleAddWorkout}>Add</button>
+                            <button className="btn btn-secondary w-1/2 ml-2" onClick={handleCancelAdd}>Cancel</button>
                         </div>
 
 
