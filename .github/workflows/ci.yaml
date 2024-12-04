@@ -24,7 +24,7 @@ jobs:
           node-version: '19' 
 
       - name: Install dependencies
-        run: npm install
+        run: npm install --force
         working-directory: .
 
       - name: Build Next.js app
