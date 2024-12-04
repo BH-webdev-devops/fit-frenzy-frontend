@@ -180,6 +180,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       localStorage.setItem("token", data.token);
       setUser(data.user);
       setIsLoggedIn(true);
+      setIsAuth(true);
       await fetchProfile();
     }
     return data;

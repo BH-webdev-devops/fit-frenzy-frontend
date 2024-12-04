@@ -13,7 +13,7 @@ interface Video {
 }
 
 export default function Exercise() {
-  const { setIsAuth, isLoggedIn }: any = useAuth();
+  const { setIsAuth, isAuth, isLoggedIn }: any = useAuth();
   const router = useRouter();
 
   const youtubeKey = process.env.NEXT_PUBLIC_YOUTUBE_API_KEY;
@@ -26,7 +26,7 @@ export default function Exercise() {
   const fetchExercises = useCallback(
     async (query: string) => {
       const token = localStorage.getItem("token");
-      if (token && isLoggedIn) {
+      if (token) {
         setLoadingState(true);
         try {
           const res = await fetch(
@@ -70,7 +70,7 @@ export default function Exercise() {
       router.push("/login");
     }
     fetchExercises(searchQuery);
-  }, [isLoggedIn, fetchExercises, router]);
+  }, [isAuth, fetchExercises, router]);
 
   return (
     <div className="bg-neutral-800 min-h-screen py-10 px-4 flex flex-col items-center">
