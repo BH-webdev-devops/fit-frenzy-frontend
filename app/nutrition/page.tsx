@@ -9,8 +9,9 @@ export default function RecipeSearch() {
   const { setIsAuth, isLoggedIn }: any = useAuth();
   const router = useRouter();
 
-  const EDAMAM_API_KEY = "e1e01cc12d779523341b002ff8d89a6e";
-  const EDAMAM_API_ID = "48c625d6";
+  const edamamKey = process.env.NEXT_PUBLIC_EDAMAM_API_KEY;
+  const edamamID = process.env.NEXT_PUBLIC_EDAMAM_API_ID;
+  console.log(edamamID, edamamKey);
   const EDAMAM_API_URL = "https://api.edamam.com/api/recipes/v2";
 
   const [recipes, setRecipes] = useState([]);
@@ -29,7 +30,7 @@ export default function RecipeSearch() {
           const res = await fetch(
             `${EDAMAM_API_URL}?type=public&q=${encodeURIComponent(
               query
-            )}&app_id=${EDAMAM_API_ID}&app_key=${EDAMAM_API_KEY}`
+            )}&app_id=${edamamID}&app_key=${edamamKey}`
           );
 
           if (res.ok) {
@@ -65,17 +66,8 @@ export default function RecipeSearch() {
         setLoadingState(false);
       }
     },
-    [EDAMAM_API_ID, EDAMAM_API_KEY, router, setIsAuth, isLoggedIn]
+    [edamamID, edamamKey, router, setIsAuth, isLoggedIn]
   );
-
-  useEffect(() => {
-    const delayDebounce = setTimeout(() => {
-      if (searchQuery.trim()) {
-        fetchRecipes(searchQuery);
-      }
-    }, 500);
-    return () => clearTimeout(delayDebounce);
-  }, [searchQuery, fetchRecipes, isLoggedIn]);
 
   useEffect(() => {
     const token = localStorage.getItem("token");

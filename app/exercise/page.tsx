@@ -10,7 +10,7 @@ export default function Exercise() {
   const { setIsAuth, isLoggedIn }: any = useAuth();
   const router = useRouter();
 
-  const YOUTUBE_API_KEY = "AIzaSyBAMPCWsBBl-sygmeX2nJmG_op6VFI8Yfo";
+  const youtubeKey = process.env.NEXT_PUBLIC_YOUTUBE_API_KEY;
   const YOUTUBE_API_URL = "https://www.googleapis.com/youtube/v3/search";
 
   const [exercises, setExercises] = useState([]);
@@ -26,7 +26,7 @@ export default function Exercise() {
           const res = await fetch(
             `${YOUTUBE_API_URL}?part=snippet&type=video&q=${encodeURIComponent(
               query
-            )}&key=${YOUTUBE_API_KEY}&maxResults=50`
+            )}&key=${youtubeKey}&maxResults=50`
           );
 
           if (res.ok) {
@@ -55,17 +55,8 @@ export default function Exercise() {
         setLoadingState(false);
       }
     },
-    [YOUTUBE_API_KEY, router, setIsAuth]
+    [youtubeKey, router, setIsAuth]
   );
-
-  useEffect(() => {
-    const delayDebounce = setTimeout(() => {
-      if (searchQuery.trim()) {
-        fetchExercises(searchQuery);
-      }
-    }, 500);
-    return () => clearTimeout(delayDebounce);
-  }, [searchQuery, fetchExercises]);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -73,7 +64,7 @@ export default function Exercise() {
       router.push("/login");
     }
     fetchExercises(searchQuery);
-  }, [isLoggedIn]);
+  }, [isLoggedIn, fetchExercises, router]);
 
   return (
     <div className="bg-neutral-800 min-h-screen py-10 px-4 flex flex-col items-center">
