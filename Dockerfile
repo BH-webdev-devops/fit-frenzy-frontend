@@ -24,7 +24,7 @@ WORKDIR /app
 
 # Install only production dependencies
 COPY package.json package-lock.json ./
-RUN npm install --production
+RUN npm install
 
 # Copy the built app from the builder stage
 COPY --from=builder /app/.next ./.next
