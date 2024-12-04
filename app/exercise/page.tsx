@@ -13,7 +13,7 @@ interface Video {
 }
 
 export default function Exercise() {
-  const { setIsAuth, isAuth, isLoggedIn }: any = useAuth();
+  const { setIsAuth, isAuth }: any = useAuth();
   const router = useRouter();
 
   const youtubeKey = process.env.NEXT_PUBLIC_YOUTUBE_API_KEY;
