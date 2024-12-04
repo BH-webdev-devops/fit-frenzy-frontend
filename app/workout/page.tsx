@@ -5,6 +5,8 @@ import { useEffect, useState } from "react";
 import { Bar } from "react-chartjs-2";
 import { FaDumbbell, FaClock, FaFire, FaCalendarAlt, FaEdit, FaTrash } from 'react-icons/fa';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
@@ -39,6 +41,10 @@ export default function Workout() {
     const [showForm, setShowForm] = useState(false);
     const [activitySuggestions, setActivitySuggestions] = useState<string[]>([]);
     const [filterDate, setFilterDate] = useState('');
+    const [startDate, setStartDate] = useState<Date | null>(null);
+    const [endDate, setEndDate] = useState<Date | null>(null);
+
+    console.log('current pageeeee', currentPage)
 
     const fetchActivitySuggestions = async (category: string, filter: any) => {
         console.log("Fetching activity suggestions");
@@ -67,9 +73,9 @@ export default function Workout() {
     }, [newWorkout.type, editWorkout?.type]);
 
 
-    const fetchFilteredWorkouts = async () => {
+    const fetchFilteredWorkouts = async (page: number) => {
         try {
-            const response = await fetch(`http://localhost:3000/api/workout/filter?filterDate=${filterDate}`, {
+            const response = await fetch(`http://localhost:3000/api/workout/filter?filterDate=${filterDate}&page=${page}&limit=10`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -79,6 +85,8 @@ export default function Workout() {
             const data = await response.json();
             if (response.ok) {
                 setWorkouts(data.result);
+                setCurrentPage(data.pagination.currentPage);
+                setTotalPages(data.pagination.totalPages);
             } else {
                 console.error(data.message);
             }
@@ -87,20 +95,40 @@ export default function Workout() {
         }
     };
 
-    useEffect(() => {
-        fetchWorkouts(currentPage);
-    }, []);
+    const handleFilterByDate = async (page: number) => {
+        try {
+            const response = await fetch(`http://localhost:3000/api/workout/filter?filterDate=${filterDate}&startDate=${startDate}&endDate=${endDate}&page=${page}&limit=10`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `${localStorage.getItem('token')}`,
+                },
+            });
+            const data = await response.json();
+            if (response.ok) {
+                setWorkouts(data.result);
+                setCurrentPage(data.pagination.currentPage);
+                setTotalPages(data.pagination.totalPages);
+            } else {
+                console.error(data.message);
+            }
+        } catch (error) {
+            console.error('Error fetching workouts:', error);
+        }
+    }
 
     useEffect(() => {
-        if (filterDate) {
-            fetchFilteredWorkouts();
+        if (filterDate && filterDate !== 'custom') {
+            fetchFilteredWorkouts(currentPage);
         } else {
+            setFilterDate('');
             fetchWorkouts(currentPage);
         }
     }, [filterDate]);
 
     const handleFilterChange = (event: any) => {
         if (event.target.value) {
+            // setCurrentPage(1);
             setFilterDate(event.target.value);
         }
     };
@@ -124,7 +152,7 @@ export default function Workout() {
                     setWorkouts(data.result);
                     setCurrentPage(data.pagination.currentPage);
                     setTotalPages(data.pagination.totalPages);
-                } else {
+                } else if (!user) {
                     const errorText = await res.text();
                     console.log(res)
                     console.error("Error fetching workouts:", res.status, res.statusText, errorText);
@@ -152,6 +180,7 @@ export default function Workout() {
         if (currentPage < totalPages) {
             setCurrentPage(currentPage + 1);
         }
+        console.log("Current Page:", currentPage);
     };
 
     const handleAddWorkout = async () => {
@@ -256,6 +285,7 @@ export default function Workout() {
     };
 
     const handleCancelEdit = () => {
+        setShowForm(false);
         setEditWorkout(null);
     };
 
@@ -313,27 +343,55 @@ export default function Workout() {
             </div>
             {(!showForm) && (
                 <div className="filter-container mb-4">
-                    <label htmlFor="filterDate" className="mr-2">Filter by Date</label>
                     <select id="filterDate" value={filterDate} onChange={handleFilterChange} className="p-3 bg-gray-700 text-white rounded">
-                        <option value="">Select Date Range</option>
+                        <option value="">Filter Date Range</option>
                         <option value="one_week">Last Week</option>
                         <option value="one_month">Last Month</option>
                         <option value="three_months">Last 3 Months</option>
                         <option value="six_months">Last 6 Months</option>
                         <option value="one_year">Last Year</option>
+                        <option value="custom">Custom Date Range</option>
                     </select>
+                </div>)}
+            {filterDate === 'custom' && (
+                <div className="custom-date-range mb-4">
+                    <div>
+                        <label>Start Date:</label>
+                        <DatePicker
+                            selected={startDate}
+                            onChange={(date) => setStartDate(date)}
+                            selectsStart
+                            startDate={startDate ?? undefined}
+                            endDate={endDate ?? undefined}
+                            className="p-2 bg-gray-700 text-white rounded"
+                        />
+                    </div>
+                    <div>
+                        <label>End Date:</label>
+                        <DatePicker
+                            selected={endDate}
+                            onChange={(date) => setEndDate(date)}
+                            selectsEnd
+                            startDate={startDate ?? undefined}
+                            endDate={endDate ?? undefined}
+                            minDate={startDate ?? undefined}
+                            className="p-2 bg-gray-700 text-white rounded"
+                        />
+                    </div>
+                    <button onClick={() => handleFilterByDate(currentPage)} className="p-3 bg-blue-500 text-white rounded mt-2">
+                        Custom Date Range
+                    </button>
                 </div>
-            )
-            }
+            )}
             {showChart && (
                 <div className="chart-container">
                     <Bar data={chartData} />
                 </div>
             )}
             {showForm && (
-                <div className="workout-form bg-blue-100 p-8 rounded-lg shadow-lg max-w-lg mx-auto">
+                <div className="workout-form p-8 rounded-lg shadow-lg max-w-lg mx-auto">
                     <select
-                        className="w-full p-3 mb-4 border border-gray-300 rounded"
+                        className="w-full p-3 mb-4 border border-gray-300 rounded text-black"
                         value={editWorkout?.type || newWorkout.type || ""}
                         onChange={(e) => editWorkout ? setEditWorkout({ ...editWorkout, type: e.target.value }) : setNewWorkout({ ...newWorkout, type: e.target.value })}
                     >
@@ -365,7 +423,7 @@ export default function Workout() {
                             <option key={index} value={activity} />
                         ))}
                     </datalist>
-                    <input className="w-full p-3 mb-4 border border-gray-300 rounded"
+                    <input className="w-full p-3 mb-4 border border-gray-300 rounded text-black"
                         type="number"
                         placeholder="Duration(mins): 40"
                         value={editWorkout?.duration || newWorkout.duration || ""}
@@ -377,7 +435,7 @@ export default function Workout() {
                         value={(editWorkout?.date instanceof Date ? editWorkout.date.toISOString().split('T')[0] : editWorkout?.date) || (newWorkout.date instanceof Date ? newWorkout.date.toISOString().split('T')[0] : newWorkout.date) || new Date().toISOString().split('T')[0]}
                         onChange={(e) => editWorkout ? setEditWorkout({ ...editWorkout, date: new Date(e.target.value) }) : setNewWorkout({ ...newWorkout, date: new Date(e.target.value) })}
                     />
-                    <textarea className="w-full p-3 mb-4 border border-gray-300 rounded"
+                    <textarea className="w-full p-3 mb-4 border border-gray-300 rounded text-black"
                         placeholder="Description: Morning run in the park"
                         value={editWorkout?.description || newWorkout.description || ""}
                         onChange={(e) => editWorkout ? setEditWorkout({ ...editWorkout, description: e.target.value }) : setNewWorkout({ ...newWorkout, description: e.target.value })}
@@ -416,7 +474,7 @@ export default function Workout() {
                                     </div>
                                     <div className="flex items-center">
                                         <FaFire className="icon" />
-                                        <span>{workout.calories_burnt} calories</span>
+                                        <span>{workout.calories_burnt}</span>
                                     </div>
                                     <div className="flex items-center">
                                         <FaCalendarAlt className="icon" />
@@ -428,10 +486,10 @@ export default function Workout() {
                                 </div>
                                 <div className="actions">
                                     <button onClick={() => handleEditWorkout(workout)} className="edit">
-                                        <FaEdit />
+                                        <FaEdit size={25} />
                                     </button>
                                     <button onClick={() => handleDeleteWorkout(workout)} className="delete">
-                                        <FaTrash />
+                                        <FaTrash size={20} />
                                     </button>
                                 </div>
                             </div>

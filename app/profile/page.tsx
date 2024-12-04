@@ -3,6 +3,14 @@ import { useAuth } from "../context/AuthContext";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
+const formatDate = (dateString: string) => {
+  const date = new Date(dateString);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
 export default function Profile() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const {
@@ -43,7 +51,7 @@ export default function Profile() {
         height: profile.height || "",
         bio: profile.bio || "",
         location: profile.location || "",
-        birthday: profile.birthday || "",
+        birthday: profile.birthday ? formatDate(profile.birthday) : "",
       });
     }
 
@@ -231,9 +239,13 @@ export default function Profile() {
               type="password"
               placeholder="Password"
               value={userForm.password}
-              onChange={(e) =>
-                setUserForm({ ...userForm, password: e.target.value })
-              }
+              onChange={(e) => {
+                const newPassword = e.target.value;
+                setUserForm((prevUserForm) => ({
+                  ...prevUserForm,
+                  password: newPassword ? newPassword : prevUserForm.password,
+                }));
+              }}
               className="w-full p-3 border border-gray-300 rounded-lg mb-4"
             />
 

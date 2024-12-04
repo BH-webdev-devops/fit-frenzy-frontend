@@ -6,8 +6,8 @@
   --primary-color: #1E90FF;
   --secondary-color: #32CD32;
   --accent-color: #FFD700;
-  --background-color:  #1E1E1E;
-  --card-background-color: #333333;
+  --background-color:  #333333;
+  --card-background-color: #1E1E1E;
   --text-color: #E0E0E0;
   --button-hover-color: #333333;
 }
@@ -93,24 +93,26 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  size: 2.5rem;
 }
 
 .workout-card .actions button.edit {
-  background-color: #6A0DAD; /* Dark Purple */
-  color: white;
+  /* background-color: #6A0DAD */
+  color: #6A0DAD;
+
 }
 
 .workout-card .actions button.edit:hover {
-  background-color: #8A2BE2;
+  background-color:white;
 }
 
 .workout-card .actions button.delete {
-  background-color: #B22222;
-  color: white;
+  /* background-color: #B22222; */
+  color: #B22222;
 }
 
 .workout-card .actions button.delete:hover {
-  background-color: #DC143C;
+  background-color: white;
 }
 button {
   display: block;
@@ -217,4 +219,73 @@ button {
 .workout-form button:hover {
   background-color: #005bb5;
 }
+
+.workout-form button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.workout-form button:disabled:hover {
+  background-color: #ccc;
+}
+
+.workout-form button {
+  padding: 0.5rem 1rem;
+  border-radius: 0.25rem;
+  background-color: #007bff;
+  color: white;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: background-color 0.3s;
+}
+
+.workout-form button:hover {
+  background-color: #005bb5;
+}
+
+.workout-form button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.workout-form button:disabled:hover {
+  background-color: #ccc;
+}
+
+.chart-container {
+  margin: 20px auto;
+  width: 80%;
+  max-width: 800px;
+  background-color: rgba(75, 72, 72, 0.1);
+}
+
+.chart-container.bg {
+  /* background-color: var(--card-background-color); */
+  padding: 1rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 6px rgba(75, 72, 72, 0.1);
+}
+
+.chart-container canvas {
+  width: 100%;
+  height: auto;
+}
+
+.chart-container .actions {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.chart-container .actions button {
+  padding: 0.5rem 1rem;
+  border-radius: 0.25rem;
+  /* background-color: var(--primary-color); */
+  color: white;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: background-color 0.3s;
+}
+
 
