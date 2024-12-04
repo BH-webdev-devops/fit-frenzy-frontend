@@ -5,6 +5,8 @@ import { useEffect, useState } from "react";
 import { Bar } from "react-chartjs-2";
 import { FaDumbbell, FaClock, FaFire, FaCalendarAlt, FaEdit, FaTrash } from 'react-icons/fa';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
@@ -38,7 +40,11 @@ export default function Workout() {
     const [editWorkout, setEditWorkout] = useState<Partial<Workout> | null>(null);
     const [showForm, setShowForm] = useState(false);
     const [activitySuggestions, setActivitySuggestions] = useState<string[]>([]);
-    const [deleteWorkout, setDeleteWorkout] = useState<Workout | null>(null);
+    const [filterDate, setFilterDate] = useState('');
+    const [startDate, setStartDate] = useState<Date | null>(null);
+    const [endDate, setEndDate] = useState<Date | null>(null);
+
+    console.log('current pageeeee', currentPage)
 
     const fetchActivitySuggestions = async (category: string, filter: any) => {
         console.log("Fetching activity suggestions");
@@ -67,6 +73,66 @@ export default function Workout() {
     }, [newWorkout.type, editWorkout?.type]);
 
 
+    const fetchFilteredWorkouts = async (page: number) => {
+        try {
+            const response = await fetch(`http://localhost:3000/api/workout/filter?filterDate=${filterDate}&page=${page}&limit=10`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `${localStorage.getItem('token')}`,
+                },
+            });
+            const data = await response.json();
+            if (response.ok) {
+                setWorkouts(data.result);
+                setCurrentPage(data.pagination.currentPage);
+                setTotalPages(data.pagination.totalPages);
+            } else {
+                console.error(data.message);
+            }
+        } catch (error) {
+            console.error('Error fetching workouts:', error);
+        }
+    };
+
+    const handleFilterByDate = async (page: number) => {
+        try {
+            const response = await fetch(`http://localhost:3000/api/workout/filter?filterDate=${filterDate}&startDate=${startDate}&endDate=${endDate}&page=${page}&limit=10`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `${localStorage.getItem('token')}`,
+                },
+            });
+            const data = await response.json();
+            if (response.ok) {
+                setWorkouts(data.result);
+                setCurrentPage(data.pagination.currentPage);
+                setTotalPages(data.pagination.totalPages);
+            } else {
+                console.error(data.message);
+            }
+        } catch (error) {
+            console.error('Error fetching workouts:', error);
+        }
+    }
+
+    useEffect(() => {
+        if (filterDate && filterDate !== 'custom') {
+            fetchFilteredWorkouts(currentPage);
+        } else {
+            setFilterDate('');
+            fetchWorkouts(currentPage);
+        }
+    }, [filterDate]);
+
+    const handleFilterChange = (event: any) => {
+        if (event.target.value) {
+            // setCurrentPage(1);
+            setFilterDate(event.target.value);
+        }
+    };
+
 
     const fetchWorkouts = async (page: number) => {
         console.log("fetching workouts");
@@ -86,7 +152,7 @@ export default function Workout() {
                     setWorkouts(data.result);
                     setCurrentPage(data.pagination.currentPage);
                     setTotalPages(data.pagination.totalPages);
-                } else {
+                } else if (!user) {
                     const errorText = await res.text();
                     console.log(res)
                     console.error("Error fetching workouts:", res.status, res.statusText, errorText);
@@ -114,6 +180,7 @@ export default function Workout() {
         if (currentPage < totalPages) {
             setCurrentPage(currentPage + 1);
         }
+        console.log("Current Page:", currentPage);
     };
 
     const handleAddWorkout = async () => {
@@ -218,6 +285,7 @@ export default function Workout() {
     };
 
     const handleCancelEdit = () => {
+        setShowForm(false);
         setEditWorkout(null);
     };
 
@@ -227,7 +295,7 @@ export default function Workout() {
     };
 
     useEffect(() => {
-        fetchWorkouts();
+        fetchWorkouts(currentPage);
     }, []);
 
     const handleShowChart = () => {
@@ -269,60 +337,175 @@ export default function Workout() {
                         {showChart ? "Hide Chart" : "Show Chart"}
                     </button>
                     <button onClick={handleAddUpdate} className="add">
-                        Add Workout
+                        New Workout
                     </button>
                 </div>
             </div>
+            {(!showForm) && (
+                <div className="filter-container mb-4">
+                    <select id="filterDate" value={filterDate} onChange={handleFilterChange} className="p-3 bg-gray-700 text-white rounded">
+                        <option value="">Filter Date Range</option>
+                        <option value="one_week">Last Week</option>
+                        <option value="one_month">Last Month</option>
+                        <option value="three_months">Last 3 Months</option>
+                        <option value="six_months">Last 6 Months</option>
+                        <option value="one_year">Last Year</option>
+                        <option value="custom">Custom Date Range</option>
+                    </select>
+                </div>)}
+            {filterDate === 'custom' && (
+                <div className="custom-date-range mb-4">
+                    <div>
+                        <label>Start Date:</label>
+                        <DatePicker
+                            selected={startDate}
+                            onChange={(date) => setStartDate(date)}
+                            selectsStart
+                            startDate={startDate ?? undefined}
+                            endDate={endDate ?? undefined}
+                            className="p-2 bg-gray-700 text-white rounded"
+                        />
+                    </div>
+                    <div>
+                        <label>End Date:</label>
+                        <DatePicker
+                            selected={endDate}
+                            onChange={(date) => setEndDate(date)}
+                            selectsEnd
+                            startDate={startDate ?? undefined}
+                            endDate={endDate ?? undefined}
+                            minDate={startDate ?? undefined}
+                            className="p-2 bg-gray-700 text-white rounded"
+                        />
+                    </div>
+                    <button onClick={() => handleFilterByDate(currentPage)} className="p-3 bg-blue-500 text-white rounded mt-2">
+                        Custom Date Range
+                    </button>
+                </div>
+            )}
             {showChart && (
                 <div className="chart-container">
                     <Bar data={chartData} />
                 </div>
             )}
-            <div className="workout-list grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {workouts?.map((workout) => (
-                    <div key={workout.id} className="workout-card">
-                        <h3>{workout.exercise || "No Exercise Specified"}</h3>
-                        <div className="space-y-2">
-                            <div className="flex items-center">
-                                <FaDumbbell className="icon" />
-                                <span>{workout.type}</span>
-                            </div>
-                            <div className="flex items-center">
-                                <FaClock className="icon" />
-                                <span>{workout.duration} minutes</span>
-                            </div>
-                            <div className="flex items-center">
-                                <FaFire className="icon" />
-                                <span>{workout.calories_burnt} calories</span>
-                            </div>
-                            <div className="flex items-center">
-                                <FaCalendarAlt className="icon" />
-                                <span>{new Date(workout.date).toLocaleDateString()}</span>
-                            </div>
-                            <div>
-                                <p>{workout.description || "No Description"}</p>
-                            </div>
+            {showForm && (
+                <div className="workout-form p-8 rounded-lg shadow-lg max-w-lg mx-auto">
+                    <select
+                        className="w-full p-3 mb-4 border border-gray-300 rounded text-black"
+                        value={editWorkout?.type || newWorkout.type || ""}
+                        onChange={(e) => editWorkout ? setEditWorkout({ ...editWorkout, type: e.target.value }) : setNewWorkout({ ...newWorkout, type: e.target.value })}
+                    >
+                        <option value="" disabled>Select Exercise Type</option>
+                        <option value="cycling">Cycling</option>
+                        <option value="running">Running</option>
+                        <option value="walking">Walking</option>
+                        <option value="swimming">Swimming</option>
+                        <option value="hiking">Hiking</option>
+                        <option value="aerobics">Aerobics/Yoga/Dance</option>
+                        <option value="sports">Sports</option>
+                        <option value="hobbies">Hobbies</option>
+                        <option value="gym">Gym</option>
+                        <option value="other">Other</option>
+                    </select>
+                    <input className="w-full p-3 mb-4 border border-gray-300 rounded text-black"
+                        type="text"
+                        placeholder="Running 5 miles"
+                        value={editWorkout?.exercise || newWorkout.exercise || ""}
+                        onChange={(e) => {
+                            const value = e.target.value;
+                            editWorkout ? setEditWorkout({ ...editWorkout, exercise: value }) : setNewWorkout({ ...newWorkout, exercise: value });
+                            fetchActivitySuggestions(newWorkout.type || editWorkout?.type || '', value);
+                        }}
+                        list="activity-suggestions"
+                    />
+                    <datalist id="activity-suggestions">
+                        {activitySuggestions.map((activity, index) => (
+                            <option key={index} value={activity} />
+                        ))}
+                    </datalist>
+                    <input className="w-full p-3 mb-4 border border-gray-300 rounded text-black"
+                        type="number"
+                        placeholder="Duration(mins): 40"
+                        value={editWorkout?.duration || newWorkout.duration || ""}
+                        onChange={(e) => editWorkout ? setEditWorkout({ ...editWorkout, duration: parseInt(e.target.value) }) : setNewWorkout({ ...newWorkout, duration: parseInt(e.target.value) })}
+                    />
+                    <input className="w-full p-3 mb-4 border border-gray-300 rounded"
+                        type="date"
+                        placeholder="Date"
+                        value={(editWorkout?.date instanceof Date ? editWorkout.date.toISOString().split('T')[0] : editWorkout?.date) || (newWorkout.date instanceof Date ? newWorkout.date.toISOString().split('T')[0] : newWorkout.date) || new Date().toISOString().split('T')[0]}
+                        onChange={(e) => editWorkout ? setEditWorkout({ ...editWorkout, date: new Date(e.target.value) }) : setNewWorkout({ ...newWorkout, date: new Date(e.target.value) })}
+                    />
+                    <textarea className="w-full p-3 mb-4 border border-gray-300 rounded text-black"
+                        placeholder="Description: Morning run in the park"
+                        value={editWorkout?.description || newWorkout.description || ""}
+                        onChange={(e) => editWorkout ? setEditWorkout({ ...editWorkout, description: e.target.value }) : setNewWorkout({ ...newWorkout, description: e.target.value })}
+                    />
+                    {editWorkout ? (
+                        <div className="edit-buttons flex justify-between mt-4">
+                            <button className="btn btn-primary w-1/2 ml-2" onClick={handleUpdateWorkout}>Save</button>
+                            <button className="btn btn-secondary w-1/2 ml-2" onClick={handleCancelEdit}>Cancel</button>
                         </div>
-                        <div className="actions">
-                            <button onClick={() => handleEditWorkout(workout)} className="edit">
-                                <FaEdit />
-                            </button>
-                            <button onClick={() => handleDeleteWorkout(workout)} className="delete">
-                                <FaTrash />
-                            </button>
+                    ) : (
+
+                        <div className="edit-buttons flex justify-between mt-4">
+                            <button className="btn btn-primary w-1/2 ml-2" onClick={handleAddWorkout}>Add</button>
+                            <button className="btn btn-secondary w-1/2 ml-2" onClick={handleCancelAdd}>Cancel</button>
                         </div>
+
+
+                    )}
+
+                </div>
+            )}
+            {(!editWorkout && !showForm) &&
+                (<div>
+                    <div className="workout-list grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {!editWorkout && !showForm && workouts?.map((workout) => (
+                            <div key={workout.id} className="workout-card">
+                                <h3>{workout.exercise || "No Exercise Specified"}</h3>
+                                <div className="space-y-2">
+                                    <div className="flex items-center">
+                                        <FaDumbbell className="icon" />
+                                        <span>{workout.type}</span>
+                                    </div>
+                                    <div className="flex items-center">
+                                        <FaClock className="icon" />
+                                        <span>{workout.duration} minutes</span>
+                                    </div>
+                                    <div className="flex items-center">
+                                        <FaFire className="icon" />
+                                        <span>{workout.calories_burnt}</span>
+                                    </div>
+                                    <div className="flex items-center">
+                                        <FaCalendarAlt className="icon" />
+                                        <span>{new Date(workout.date).toLocaleDateString()}</span>
+                                    </div>
+                                    <div>
+                                        <p>{workout.description || "No Description"}</p>
+                                    </div>
+                                </div>
+                                <div className="actions">
+                                    <button onClick={() => handleEditWorkout(workout)} className="edit">
+                                        <FaEdit size={25} />
+                                    </button>
+                                    <button onClick={() => handleDeleteWorkout(workout)} className="delete">
+                                        <FaTrash size={20} />
+                                    </button>
+                                </div>
+                            </div>
+                        ))}
                     </div>
-                ))}
-            </div>
-            <div className="pagination flex justify-center mt-6">
-                <button onClick={handlePreviousPage} disabled={currentPage == 1} className="px-4 py-2 bg-gray-300 text-black rounded hover:bg-gray-400 transition-colors duration-300">
-                    Previous
-                </button>
-                <span className="text-black mx-4">Page {currentPage} of {totalPages}</span>
-                <button onClick={handleNextPage} disabled={currentPage == totalPages} className="px-4 py-2 bg-gray-300 text-black rounded hover:bg-gray-400 transition-colors duration-300">
-                    Next
-                </button>
-            </div>
+
+                    <div className="pagination flex justify-center mt-6">
+                        <button onClick={handlePreviousPage} disabled={currentPage == 1} className="px-4 py-2 bg-gray-300 text-black rounded hover:bg-gray-400 transition-colors duration-300">
+                            Previous
+                        </button>
+                        <span className="text-black mx-4">Page {currentPage} of {totalPages}</span>
+                        <button onClick={handleNextPage} disabled={currentPage == totalPages} className="px-4 py-2 bg-gray-300 text-black rounded hover:bg-gray-400 transition-colors duration-300">
+                            Next
+                        </button>
+                    </div>
+                </div>)}
         </div>
-    );
-}
+    )
+};
