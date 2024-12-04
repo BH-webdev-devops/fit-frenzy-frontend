@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "../context/AuthContext";
 
 export default function RecipeSearch() {
-  const { setIsAuth }: any = useAuth();
+  const { setIsAuth, isLoggedIn }: any = useAuth();
   const router = useRouter();
 
   const EDAMAM_API_KEY = "e1e01cc12d779523341b002ff8d89a6e";
@@ -22,7 +22,8 @@ export default function RecipeSearch() {
   const fetchRecipes = useCallback(
     async (query: string) => {
       const token = localStorage.getItem("token");
-      if (token) {
+      console.log(isLoggedIn);
+      if (token && isLoggedIn) {
         setLoadingState(true);
         try {
           const res = await fetch(
@@ -49,13 +50,14 @@ export default function RecipeSearch() {
             setIsAuth(true);
             setRecipes(recipes);
           } else {
-            router.push("/register");
+            router.push("/login");
             console.error("Failed to fetch recipes");
             setIsAuth(false);
           }
         } catch (err) {
           setIsAuth(false);
           console.error(`Error fetching recipes: ${err}`);
+          router.push("/login");
         } finally {
           setLoadingState(false);
         }
@@ -63,7 +65,7 @@ export default function RecipeSearch() {
         setLoadingState(false);
       }
     },
-    [EDAMAM_API_ID, EDAMAM_API_KEY, router, setIsAuth]
+    [EDAMAM_API_ID, EDAMAM_API_KEY, router, setIsAuth, isLoggedIn]
   );
 
   useEffect(() => {
@@ -73,11 +75,15 @@ export default function RecipeSearch() {
       }
     }, 500);
     return () => clearTimeout(delayDebounce);
-  }, [searchQuery, fetchRecipes]);
+  }, [searchQuery, fetchRecipes, isLoggedIn]);
 
   useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token && !isLoggedIn) {
+      router.push("/login");
+    }
     fetchRecipes(searchQuery);
-  }, []);
+  }, [fetchRecipes, router, searchQuery, isLoggedIn]);
 
   const loadSavedRecipes = () => {
     const saved = localStorage.getItem("saved_recipes");
@@ -113,7 +119,7 @@ export default function RecipeSearch() {
   };
 
   return (
-    <div className="bg-neutral-600 min-h-screen py-10 px-4 flex flex-col items-center">
+    <div className="bg-neutral-800 min-h-screen py-10 px-4 flex flex-col items-center">
       <h1 className="text-3xl font-bold text-center mb-8 text-white">
         Find the perfect recipe for today!
       </h1>
@@ -149,13 +155,13 @@ export default function RecipeSearch() {
                   href={recipe.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-black"
+                  className="text-white"
                 >
                   {recipe.label}
                 </a>
                 <button
                   onClick={() => removeSavedRecipe(recipe.id)}
-                  className="text-black ml-1 bg-neutral-600 hover:bg-neutral-600"
+                  className="text-red-800 ml-1 bg-neutral-800 hover:bg-neutral-800"
                 >
                   X
                 </button>
@@ -183,7 +189,7 @@ export default function RecipeSearch() {
                 <h3 className="text-lg font-semibold mt-4 text-gray-800 text-center truncate">
                   {recipe.label}
                 </h3>
-                <p className="text-gray-600 text-sm text-center">
+                <p className="text-gray-800 text-sm text-center">
                   <span className="block">
                     Calories: {recipe.calories} kcal
                   </span>
@@ -202,7 +208,7 @@ export default function RecipeSearch() {
 
                 <button
                   onClick={() => saveRecipe(recipe)}
-                  className="block text-center text-white bg-neutral-500 hover:bg-neutral-600 rounded-md mt-4 w-full"
+                  className="block text-center text-white bg-neutral-500 hover:bg-neutral-800 rounded-md mt-4 w-full"
                   disabled={isRecipeSaved(recipe.id)}
                 >
                   {isRecipeSaved(recipe.id) ? "Saved" : "Save Recipe"}

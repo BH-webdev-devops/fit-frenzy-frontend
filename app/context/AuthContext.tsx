@@ -4,13 +4,12 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 
 interface AuthContextType {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   user: any;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   profile: any;
   isAuth: boolean;
   loading: boolean;
   profileExists: boolean;
+  isLoggedIn: boolean;
   login: (email: string, password: string) => Promise<void>;
   register: (name: string, email: string, password: string) => Promise<void>;
   logout: () => void;
@@ -28,9 +27,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [loading, setLoading] = useState(true);
   const [profileExists, setProfileExists] = useState(false);
   const [profile, setProfile] = useState(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const token =
+      typeof window !== "undefined" ? localStorage.getItem("token") : null;
+    setIsLoggedIn(!!token);
+  }, []);
 
   const fetchProfile = async () => {
     const token = localStorage.getItem("token");
+
     if (token) {
       try {
         const res = await fetch(`http://localhost:3000/api/profile`, {
@@ -40,18 +47,25 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
         if (res.ok) {
           const data = await res.json();
+          console.log(data);
+
           setUser(data.user);
           setIsAuth(true);
-          setProfileExists(!!data.result);
           setProfile(data.result);
-        } else {
+          setProfileExists(!!data.result);
+        } else if (res.status === 404) {
           setIsAuth(false);
           setProfileExists(false);
+          setUser(null);
+          setProfile(null);
+        } else {
+          console.error("Error fetching profile: ", res.statusText);
+          setIsAuth(false);
         }
       } catch (err) {
+        console.error(`Error fetching profile: ${err}`);
         setIsAuth(false);
         setProfileExists(false);
-        console.error(`Error fetching profile: ${err}`);
       } finally {
         setLoading(false);
       }
@@ -95,7 +109,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const updateProfile = async (userData: {
     name?: string;
     email?: string;
-    password?: string;
     gender?: string;
     age?: number;
     weight?: number;
@@ -164,6 +177,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     if (data.token) {
       localStorage.setItem("token", data.token);
       setUser(data.user);
+      setIsLoggedIn(true);
       await fetchProfile();
     }
     return data;
@@ -174,6 +188,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setUser(null);
     setIsAuth(false);
     setProfileExists(false);
+    setIsLoggedIn(false);
   };
 
   return (
@@ -191,6 +206,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         updateProfile,
         setLoading,
         setIsAuth,
+        isLoggedIn,
       }}
     >
       {children}

@@ -1,35 +1,28 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Dialog, DialogPanel } from "@headlessui/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import { useAuth } from "../context/AuthContext"; // Import AuthContext
 
-
 const navigation = [
   { name: "Exercises", href: "/exercise" },
   { name: "Recipes", href: "/nutrition" },
-  { name: "My Workouts", href: "/workout" },
-  { name: "My Profile", href: "/profile" },
+  { name: "Profile", href: "/profile" },
+  { name: "Workouts", href: "/workout" },
+  { name: "Progress", href: "/progress" },
+  { name: "Community", href: "/community" },
 ];
-
 
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { logout }: any = useAuth();
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    setIsLoggedIn(!!token);
-  }, []);
+  const { logout, isLoggedIn }: any = useAuth();
 
   const handleLogout = () => {
     logout();
     localStorage.removeItem("token");
-    setIsLoggedIn(false);
   };
 
   return (
@@ -65,7 +58,7 @@ export default function Navbar() {
               </a>
               <a
                 href="/register"
-                className="rounded-md bg-neutral-600 px-4 py-2 text-lg font-semibold text-white shadow-sm hover:bg-neutral-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-600"
+                className="rounded-md bg-neutral-800 px-4 py-2 text-lg font-semibold text-white shadow-sm hover:bg-neutral-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-600"
               >
                 Sign up
               </a>
@@ -73,7 +66,7 @@ export default function Navbar() {
           ) : (
             <button
               onClick={handleLogout}
-              className="rounded-md bg-neutral-600 px-4 py-2 text-lg font-semibold text-white shadow-sm hover:bg-neutral-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-600"
+              className="rounded-md bg-neutral-800 px-4 py-2 text-lg font-semibold text-white shadow-sm hover:bg-neutral-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-600"
             >
               Logout
             </button>
@@ -109,7 +102,7 @@ export default function Navbar() {
             {!isLoggedIn ? (
               <a
                 href="/register"
-                className="ml-auto rounded-md bg-neutral-600 px-4 py-2 text-lg font-semibold text-white shadow-sm hover:bg-neutral-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-600"
+                className="ml-auto rounded-md bg-neutral-600 px-4 py-2 text-lg font-semibold text-white shadow-sm hover:bg-neutral-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-600"
               >
                 Sign up
               </a>
@@ -124,7 +117,7 @@ export default function Navbar() {
             </button>
           </div>
           <div className="mt-6 flow-root">
-            <div className="-my-6 divide-y divide-gray-500/10">
+            <div className="-my-6 divide-y divide-gray-800/10">
               <div className="space-y-2 py-6">
                 {navigation.map((item) => (
                   <a
