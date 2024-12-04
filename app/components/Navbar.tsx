@@ -9,7 +9,10 @@ import { useAuth } from "../context/AuthContext"; // Import AuthContext
 const navigation = [
   { name: "Exercises", href: "/exercise" },
   { name: "Recipes", href: "/nutrition" },
-  { name: "My Profile", href: "/profile" },
+  { name: "Profile", href: "/profile" },
+  { name: "Workouts", href: "/workout" },
+  { name: "Progress", href: "/progress" },
+  { name: "Community", href: "/community" },
 ];
 
 export default function Navbar() {
