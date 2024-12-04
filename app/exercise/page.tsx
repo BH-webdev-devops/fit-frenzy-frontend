@@ -66,11 +66,16 @@ export default function Exercise() {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    if (!token && !isLoggedIn) {
+    if (!token) {
       router.push("/login");
     }
-    fetchExercises(searchQuery);
-  }, [isAuth, fetchExercises, router]);
+  }, [isAuth, router]);
+
+  useEffect(() => {
+    if (searchQuery.trim() !== "") {
+      fetchExercises(searchQuery);
+    }
+  }, [searchQuery, fetchExercises]);
 
   return (
     <div className="bg-neutral-800 min-h-screen py-10 px-4 flex flex-col items-center">

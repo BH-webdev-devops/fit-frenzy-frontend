@@ -2,6 +2,7 @@
 "use client";
 
 import React, { createContext, useContext, useEffect, useState } from "react";
+import { jwtDecode } from "jwt-decode";
 
 interface AuthContextType {
   user: any;
@@ -10,6 +11,7 @@ interface AuthContextType {
   loading: boolean;
   profileExists: boolean;
   isLoggedIn: boolean;
+  quotes: any;
   login: (email: string, password: string) => Promise<void>;
   register: (name: string, email: string, password: string) => Promise<void>;
   logout: () => void;
@@ -28,8 +30,44 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [profileExists, setProfileExists] = useState(false);
   const [profile, setProfile] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [quotes, setQuotes] = useState();
 
   const host = process.env.NEXT_PUBLIC_API_URL;
+
+  const isTokenExpired = (token: string): boolean => {
+    const decoded: any = jwtDecode(token);
+    const currentTime = Math.floor(Date.now() / 1000);
+    return decoded.exp < currentTime;
+  };
+
+  const fetchQuotes = async () => {
+    const token = localStorage.getItem("token");
+
+    if (token) {
+      try {
+        const res = await fetch(`${host}/api/quotes`, {
+          method: "GET",
+          headers: { Authorization: `${token}` },
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          setQuotes(data.result);
+        } else {
+          console.error("Error fetching quotes:", res.status, res.statusText);
+        }
+      } catch (err) {
+        console.log(err);
+        console.error(`Error fetching quotes: ${err}`);
+      }
+    } else {
+      console.error("No token found");
+    }
+  };
+
+  useEffect(() => {
+    fetchQuotes();
+  }, []);
 
   useEffect(() => {
     const token =
@@ -40,7 +78,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const fetchProfile = async () => {
     const token = localStorage.getItem("token");
 
-    if (token) {
+    if (token && !isTokenExpired(token)) {
       try {
         const res = await fetch(`${host}/api/profile`, {
           method: "GET",
@@ -210,6 +248,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         setLoading,
         setIsAuth,
         isLoggedIn,
+        quotes,
       }}
     >
       {children}
