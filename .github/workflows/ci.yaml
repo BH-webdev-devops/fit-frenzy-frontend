@@ -50,6 +50,9 @@ jobs:
         working-directory: .
         run: |
           docker build --platform linux/amd64 --build-arg NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL }} \
+            --build-arg NEXT_PUBLIC_EDAMAM_API_KEY=${{ secrets.NEXT_PUBLIC_EDAMAM_API_KEY }} \
+            --build-arg NEXT_PUBLIC_EDAMAM_API_ID=${{ secrets.NEXT_PUBLIC_EDAMAM_API_ID }} \
+            --build-arg NEXT_PUBLIC_YOUTUBE_API_KEY=${{ secrets.NEXT_PUBLIC_YOUTUBE_API_KEY }} \
             -t gcr.io/${{ secrets.PROJECT_ID }}/fit-frenzy-frontend:latest .
           docker push gcr.io/${{ secrets.PROJECT_ID }}/fit-frenzy-frontend:latest
 
