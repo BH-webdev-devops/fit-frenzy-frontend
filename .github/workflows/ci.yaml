@@ -49,7 +49,7 @@ jobs:
       - name: Build and Push Docker Image
         working-directory: .
         run: |
-          docker build --build-arg NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL }} \
+          docker build --platform linux/amd64 --build-arg NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL }} \
             -t gcr.io/${{ secrets.PROJECT_ID }}/fit-frenzy-frontend:latest .
           docker push gcr.io/${{ secrets.PROJECT_ID }}/fit-frenzy-frontend:latest
 
