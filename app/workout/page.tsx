@@ -61,6 +61,7 @@ export default function Workout() {
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
 
+  const host = process.env.NEXT_PUBLIC_API_URL;
   console.log("current pageeeee", currentPage);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -69,7 +70,7 @@ export default function Workout() {
     const token = localStorage.getItem("token");
     try {
       const response = await fetch(
-        `http://localhost:3000/api/workout/activity?category=${category}&filter=${filter}`,
+        `${host}/api/workout/activity?category=${category}&filter=${filter}`,
         {
           method: "GET",
           headers: { Authorization: `${token}` }, // Ensure Bearer token format
@@ -100,7 +101,7 @@ export default function Workout() {
   const fetchFilteredWorkouts = async (page: number) => {
     try {
       const response = await fetch(
-        `http://localhost:3000/api/workout/filter?filterDate=${filterDate}&page=${page}&limit=10`,
+        `${host}/api/workout/filter?filterDate=${filterDate}&page=${page}&limit=10`,
         {
           method: "GET",
           headers: {
@@ -125,7 +126,7 @@ export default function Workout() {
   const handleFilterByDate = async (page: number) => {
     try {
       const response = await fetch(
-        `http://localhost:3000/api/workout/filter?filterDate=${filterDate}&startDate=${startDate}&endDate=${endDate}&page=${page}&limit=10`,
+        `${host}/api/workout/filter?filterDate=${filterDate}&startDate=${startDate}&endDate=${endDate}&page=${page}&limit=10`,
         {
           method: "GET",
           headers: {
@@ -171,13 +172,10 @@ export default function Workout() {
 
     if (token) {
       try {
-        const res = await fetch(
-          `http://localhost:3000/api/workout?page=${page}&limit=10`,
-          {
-            method: "GET",
-            headers: { Authorization: `${token}` }, // Ensure Bearer token format
-          }
-        );
+        const res = await fetch(`${host}/api/workout?page=${page}&limit=10`, {
+          method: "GET",
+          headers: { Authorization: `${token}` }, // Ensure Bearer token format
+        });
 
         if (res.ok) {
           const data = await res.json();
@@ -225,7 +223,7 @@ export default function Workout() {
     const token = localStorage.getItem("token");
     if (token) {
       try {
-        const res = await fetch(`http://localhost:3000/api/workout`, {
+        const res = await fetch(`${host}/api/workout`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -276,16 +274,13 @@ export default function Workout() {
     }
 
     try {
-      const response = await fetch(
-        `http://localhost:3000/api/workout/${workout.id}`,
-        {
-          method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `${token}`,
-          },
-        }
-      );
+      const response = await fetch(`${host}/api/workout/${workout.id}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `${token}`,
+        },
+      });
 
       if (response.ok) {
         // Update the state to remove the deleted workout
@@ -309,17 +304,14 @@ export default function Workout() {
 
     if (token && editWorkout?.id) {
       try {
-        const res = await fetch(
-          `http://localhost:3000/api/workout/${editWorkout.id}`,
-          {
-            method: "PUT",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `${token}`,
-            },
-            body: JSON.stringify(editWorkout),
-          }
-        );
+        const res = await fetch(`${host}/api/workout/${editWorkout.id}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `${token}`,
+          },
+          body: JSON.stringify(editWorkout),
+        });
 
         if (res.ok) {
           fetchWorkouts(currentPage);
