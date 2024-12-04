@@ -6,6 +6,12 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "../context/AuthContext";
 import { useState, useEffect, useCallback } from "react";
 
+interface Video {
+  videoId: string;
+  title: string;
+  description: string;
+}
+
 export default function Exercise() {
   const { setIsAuth, isLoggedIn }: any = useAuth();
   const router = useRouter();
@@ -85,7 +91,7 @@ export default function Exercise() {
       ) : exercises.length > 0 ? (
         <div className="w-full overflow-x-auto my-44">
           <div className="flex gap-10 justify-start items-start">
-            {exercises.map((video, index) => (
+            {exercises.map((video: Video, index) => (
               <div
                 key={index}
                 className="flex-none w-[400px] h-[600px] bg-white rounded-lg shadow-md p-4"

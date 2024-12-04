@@ -5,6 +5,17 @@ import React, { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../context/AuthContext";
 
+interface Recipe {
+  image: string;
+  label: string;
+  protein: number;
+  sugar: number;
+  calories: number;
+  fat: number;
+  id: string;
+  url: string;
+}
+
 export default function RecipeSearch() {
   const { setIsAuth, isLoggedIn }: any = useAuth();
   const router = useRouter();
@@ -168,7 +179,7 @@ export default function RecipeSearch() {
       ) : recipes.length > 0 ? (
         <div className="w-full overflow-x-auto my-10">
           <div className="flex gap-10 justify-start items-start flex-nowrap my-44">
-            {recipes.map((recipe, index) => (
+            {recipes.map((recipe: Recipe, index) => (
               <div
                 key={index}
                 className="flex-none w-[400px] h-[600px] bg-white rounded-lg shadow-md p-4 py-8"
