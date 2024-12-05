@@ -4,7 +4,7 @@ import { Line } from 'react-chartjs-2';
 import { Pie } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement } from 'chart.js';
 import { Chart, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import { useAuth } from "../context/AuthContext";
 
 // Register the necessary components
@@ -31,53 +31,70 @@ interface WorkoutEntry {
 }
 
 export default function Progress() {
-    const { user, isAuth, loading }: any = useAuth();
+    const { user, isAuth, loading, isLoggedIn }: any = useAuth();
     const [weightEntries, setWeightEntries] = useState<WeightEntry[]>([]);
     const [workoutEntries, setWorkoutEntries] = useState<WorkoutEntry[]>([]);
     const [showPieChart, setShowPieChart] = useState(true);
     const [showLineChart, setShowLineChart] = useState(true);
-
-
-    const fetchWeightEntries = async () => {
-        const token = localStorage.getItem('token');
-        try {
-            const response = await fetch('http://localhost:3000/api/profile/weight', {
-                method: 'GET',
-                headers: { Authorization: `${token}` },
-            });
-            if (response.ok) {
-                const data = await response.json();
-                setWeightEntries(data.result);
-            } else {
-                console.error('Error fetching weight entries:', response.status, response.statusText);
-            }
-        } catch (error) {
-            console.error('Error fetching weight entries:', error);
-        }
-    };
+    const router = useRouter();
 
     useEffect(() => {
-        fetchWeightEntries();
-        fetchWorkoutEntries();
-    }, []);
+        const token = localStorage.getItem('token') || '';
+        if (!token || !isAuth) {
+            router.push('/login');
+        } else {
+            console.log('token:', token);
+            fetchWeightEntries();
+            fetchWorkoutEntries();
+        }
+    }, [isAuth]);
+
+    const fetchWeightEntries = async () => {
+        const token = localStorage.getItem('token'); if (!token) return;
+        if (token) {
+            try {
+                const response = await fetch('http://localhost:3000/api/profile/weight', {
+                    method: 'GET',
+                    headers: { Authorization: `${token}` },
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    setWeightEntries(data.result);
+                } else {
+                    console.error('Error fetching weight entries:', response.status, response.statusText);
+                }
+            } catch (error) {
+                console.error('Error fetching weight entries:', error);
+            }
+        }
+        else {
+            console.error('No token found');
+            return
+        }
+    }
 
     const fetchWorkoutEntries = async () => {
-        const token = localStorage.getItem('token');
-        try {
-            const response = await fetch('http://localhost:3000/api/workout/all', {
-                method: 'GET',
-                headers: { Authorization: `${token}` },
-            });
-            if (response.ok) {
-                const data = await response.json();
+        const token = localStorage.getItem('token'); if (!token) return;
+        if (token) {
+            try {
+                const response = await fetch('http://localhost:3000/api/workout/all', {
+                    method: 'GET',
+                    headers: { Authorization: `${token}` },
+                });
+                if (response.ok) {
+                    const data = await response.json();
 
-                setWorkoutEntries(data.result);
-                console.log(data);
-            } else {
-                console.error('Error fetching workout entries:', response.status, response.statusText);
+                    setWorkoutEntries(data.result);
+                    console.log(data);
+                } else {
+                    console.error('Error fetching workout entries:', response.status, response.statusText);
+                }
+            } catch (error) {
+                console.error('Error fetching workout entries:', error);
             }
-        } catch (error) {
-            console.error('Error fetching workout entries:', error);
+        } else {
+            console.error('No token found');
+            return
         }
     }
 

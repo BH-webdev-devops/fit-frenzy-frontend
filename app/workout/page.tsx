@@ -3,7 +3,7 @@ import { useAuth } from "../context/AuthContext";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Bar } from "react-chartjs-2";
-import { FaDumbbell, FaClock, FaFire, FaCalendarAlt, FaEdit, FaTrash } from 'react-icons/fa';
+import { FaDumbbell, FaClock, FaFire, FaCalendarAlt, FaEdit, FaTrash, FaTimes } from 'react-icons/fa';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -27,11 +27,11 @@ export default function Workout() {
     const {
         user,
         loading,
-        isAuth
+        isAuth,
+        isLoggedIn
     }: // eslint-disable-next-line @typescript-eslint/no-explicit-any
         any = useAuth();
     const router = useRouter();
-
     const [workouts, setWorkouts] = useState<Workout[] | null>(null);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
@@ -43,43 +43,41 @@ export default function Workout() {
     const [filterDate, setFilterDate] = useState('');
     const [startDate, setStartDate] = useState<Date | null>(null);
     const [endDate, setEndDate] = useState<Date | null>(null);
+    const [errors, setErrors] = useState<{ exercise?: string; type?: string; duration?: string; date?: string; description?: string }>({})
+    // const token = typeof window !== 'undefined' ? localStorage.getItem("token") : null;
 
-    console.log('current pageeeee', currentPage)
 
     const fetchActivitySuggestions = async (category: string, filter: any) => {
         console.log("Fetching activity suggestions");
         const token = localStorage.getItem("token");
-        try {
-            const response = await fetch(`http://localhost:3000/api/workout/activity?category=${category}&filter=${filter}`, {
-                method: "GET",
-                headers: { Authorization: `${token}` }, // Ensure Bearer token format
-            });
-            if (response.ok) {
-                const data = await response.json();
-                setActivitySuggestions(data);
-            } else {
-                console.error('Error fetching activity suggestions:', response.status, response.statusText);
+        if (token) {
+            try {
+                const response = await fetch(`http://localhost:3000/api/workout/activity?category=${category}&filter=${filter}`, {
+                    method: "GET",
+                    headers: { Authorization: `${token}` }, // Ensure Bearer token format
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    setActivitySuggestions(data);
+                } else {
+                    console.error('Error fetching activity suggestions:', response.status, response.statusText);
+                }
+                console.log("Activity Suggestions:", activitySuggestions);
+            } catch (error) {
+                console.error('Error fetching activity suggestions:', error);
             }
-            console.log("Activity Suggestions:", activitySuggestions);
-        } catch (error) {
-            console.error('Error fetching activity suggestions:', error);
         }
     };
 
-    useEffect(() => {
-        if (newWorkout.type || editWorkout?.type) {
-            fetchActivitySuggestions(newWorkout.type || editWorkout?.type || '', '');
-        }
-    }, [newWorkout.type, editWorkout?.type]);
-
 
     const fetchFilteredWorkouts = async (page: number) => {
+        const token = localStorage.getItem("token");
         try {
-            const response = await fetch(`http://localhost:3000/api/workout/filter?filterDate=${filterDate}&page=${page}&limit=10`, {
+            const response = await fetch(`http://localhost:3000/api/workout/filter?filterDate=${filterDate}&page=${page}&limit=9`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
-                    Authorization: `${localStorage.getItem('token')}`,
+                    Authorization: `${token}`,
                 },
             });
             const data = await response.json();
@@ -96,12 +94,13 @@ export default function Workout() {
     };
 
     const handleFilterByDate = async (page: number) => {
+        const token = localStorage.getItem("token");
         try {
-            const response = await fetch(`http://localhost:3000/api/workout/filter?filterDate=${filterDate}&startDate=${startDate}&endDate=${endDate}&page=${page}&limit=10`, {
+            const response = await fetch(`http://localhost:3000/api/workout/filter?filterDate=${filterDate}&startDate=${startDate}&endDate=${endDate}&page=${page}&limit=9`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
-                    Authorization: `${localStorage.getItem('token')}`,
+                    Authorization: `${token}`,
                 },
             });
             const data = await response.json();
@@ -117,14 +116,7 @@ export default function Workout() {
         }
     }
 
-    useEffect(() => {
-        if (filterDate && filterDate !== 'custom') {
-            fetchFilteredWorkouts(currentPage);
-        } else {
-            setFilterDate('');
-            fetchWorkouts(currentPage);
-        }
-    }, [filterDate]);
+
 
     const handleFilterChange = (event: any) => {
         if (event.target.value) {
@@ -133,15 +125,17 @@ export default function Workout() {
         }
     };
 
+    const removeFilter = () => {
+        setFilterDate('');
+        fetchWorkouts(currentPage);
+    }
 
     const fetchWorkouts = async (page: number) => {
-        console.log("fetching workouts");
+        console.log("fetching workouts", page);
         const token = localStorage.getItem("token");
-        console.log("Token:", token); // Debugging log
-
         if (token) {
             try {
-                const res = await fetch(`http://localhost:3000/api/workout?page=${page}&limit=10`, {
+                const res = await fetch(`http://localhost:3000/api/workout?page=${page}&limit=9`, {
                     method: "GET",
                     headers: { Authorization: `${token}` }, // Ensure Bearer token format
                 });
@@ -166,9 +160,7 @@ export default function Workout() {
         }
     }
 
-    useEffect(() => {
-        fetchWorkouts(currentPage);
-    }, [currentPage]);
+
 
     const handlePreviousPage = () => {
         if (currentPage > 1) {
@@ -219,7 +211,6 @@ export default function Workout() {
     };
 
     const handleDeleteWorkout = async (workout: Workout) => {
-        const token = localStorage.getItem("token");
         if (!workout.id) {
             alert("Workout ID is required");
             return;
@@ -229,7 +220,7 @@ export default function Workout() {
         if (!confirmDelete) {
             return;
         }
-
+        const token = localStorage.getItem("token");
         try {
             const response = await fetch(`http://localhost:3000/api/workout/${workout.id}`, {
                 method: 'DELETE',
@@ -294,13 +285,12 @@ export default function Workout() {
         setShowForm(false);
     };
 
-    useEffect(() => {
-        fetchWorkouts(currentPage);
-    }, []);
-
     const handleShowChart = () => {
         setShowChart(!showChart);
+        setNewWorkout({});
+
     };
+
 
     const handleAddUpdate = () => {
         setNewWorkout({});
@@ -312,35 +302,148 @@ export default function Workout() {
         labels: workouts?.map((workout: Workout) => new Date(workout.date).toLocaleDateString()),
         datasets: [
             {
-                label: 'Calories Burnt',
+                label: 'Calories Burnt (cal)',
+                text: 'rgba(255,255,255,1)',
                 data: workouts?.map((workout: Workout) => (workout.calories_burnt)),
-                backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                borderColor: 'rgba(75, 192, 192, 1)',
+                backgroundColor: 'rgba(30, 144, 255, 1)',
+                borderColor: 'rgba(30, 144, 255, 1)',
                 borderWidth: 1,
             },
             {
                 label: 'Duration (minutes)',
                 data: workouts?.map(workout => workout.duration),
-                backgroundColor: 'rgba(153, 102, 255, 0.2)',
-                borderColor: 'rgba(153, 102, 255, 1)',
+                backgroundColor: 'rgba(106, 13, 173, 1)',
+                borderColor: 'rgba(106, 13, 173, 1)',
                 borderWidth: 1,
             },
         ],
     };
 
+    // Utility function to sanitize inputs
+    const sanitizeInput = (input: any) => {
+        const element = document.createElement('div');
+        element.innerText = input;
+        return element.innerHTML;
+    };
+
+    const validateText = (input: any) => {
+        const pattern = /^[a-zA-Z0-9 !_-]+$/;
+        return pattern.test(input);
+    };
+
+
+    const validate = () => {
+        const errors: { exercise?: string; type?: string; duration?: string; date?: string; description?: string } = {};
+        const sanitizedNewWorkout = {
+            exercise: sanitizeInput(newWorkout.exercise),
+            type: sanitizeInput(newWorkout.type),
+            duration: newWorkout.duration,
+            date: newWorkout.date,
+            description: sanitizeInput(newWorkout.description),
+        };
+
+        const sanitizedEditWorkout = editWorkout && {
+            exercise: sanitizeInput(editWorkout.exercise),
+            type: sanitizeInput(editWorkout.type),
+            duration: editWorkout.duration,
+            date: editWorkout.date,
+            description: sanitizeInput(editWorkout.description),
+        };
+
+        if (!sanitizedNewWorkout.exercise && !sanitizedEditWorkout?.exercise) {
+            errors.exercise = 'Exercise is required';
+        } else if (!validateText(sanitizedNewWorkout.exercise) || !validateText(sanitizedEditWorkout?.exercise)) {
+            errors.exercise = 'Invalid characters in exercise';
+        }
+
+        if (!sanitizedNewWorkout.type && !sanitizedEditWorkout?.type) {
+            errors.type = 'Type is required';
+        } else if (!validateText(sanitizedNewWorkout.type) || !validateText(sanitizedEditWorkout?.type)) {
+            errors.type = 'Invalid characters in type';
+        }
+
+        if (!sanitizedNewWorkout.duration && !sanitizedEditWorkout?.duration) {
+            errors.duration = 'Duration is required';
+        } else if ((sanitizedNewWorkout.duration ?? 0) <= 0 || (sanitizedEditWorkout?.duration ?? 0) <= 0) {
+            errors.duration = 'Duration must be a positive number';
+        }
+
+        if (!sanitizedNewWorkout.date && !sanitizedEditWorkout?.date) {
+            errors.date = 'Date is required';
+        }
+
+        if (!sanitizedNewWorkout.description && !sanitizedEditWorkout?.description) {
+            errors.description = 'Description is required';
+        } else if (!validateText(sanitizedNewWorkout.description) || !validateText(sanitizedEditWorkout?.description)) {
+            errors.description = 'Invalid characters in description';
+        }
+
+        setErrors(errors);
+        return Object.keys(errors).length === 0;
+    };
+
+    const handleSubmit = () => {
+        // e.preventDefault();
+        if (validate()) {
+            if (editWorkout) {
+                handleUpdateWorkout();
+            } else {
+                handleAddWorkout();
+            }
+        }
+    };
+
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+        if (!token) {
+            router.push("/login");
+        } else {
+            fetchWorkouts(currentPage)
+        };
+    }, [currentPage]);
+
+
+
+
+
+    useEffect(() => {
+        if (newWorkout.type || editWorkout?.type) {
+            fetchActivitySuggestions(newWorkout.type || editWorkout?.type || '', '');
+        }
+    }, [newWorkout.type, editWorkout?.type]);
+
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+        if (!token) {
+            router.push("/login");
+        }
+        else {
+            if (filterDate && filterDate !== 'custom') {
+                fetchFilteredWorkouts(currentPage);
+            } else {
+                setFilterDate('');
+                fetchWorkouts(currentPage);
+            }
+        }
+    }, [filterDate]);
+
     return (
         <div className="container mx-auto p-4">
-            <div className="button-container">
-                <h2 className="title">Workouts</h2>
-                <div className="buttons">
-                    <button onClick={handleShowChart}>
-                        {showChart ? "Hide Chart" : "Show Chart"}
-                    </button>
-                    <button onClick={handleAddUpdate} className="add">
-                        New Workout
-                    </button>
+            {(!showForm) && (
+                <div>
+                    <div className="button-container">
+                        <h2 className="title">Workouts</h2>
+                        <div className="buttons">
+                            <button onClick={handleShowChart}>
+                                {showChart ? "Hide Chart" : "Show Chart"}
+                            </button>
+                            <button onClick={handleAddUpdate} className="add">
+                                New Workout
+                            </button>
+                        </div>
+                    </div>
                 </div>
-            </div>
+            )}
             {(!showForm) && (
                 <div className="filter-container mb-4">
                     <select id="filterDate" value={filterDate} onChange={handleFilterChange} className="p-3 bg-gray-700 text-white rounded">
@@ -352,7 +455,16 @@ export default function Workout() {
                         <option value="one_year">Last Year</option>
                         <option value="custom">Custom Date Range</option>
                     </select>
+                    {filterDate && (
+                        <button
+                            onClick={removeFilter}
+                            className=" text-white rounded"
+                        >
+                            <FaTimes />
+                        </button>
+                    )}
                 </div>)}
+
             {filterDate === 'custom' && (
                 <div className="custom-date-range mb-4">
                     <div>
@@ -388,6 +500,7 @@ export default function Workout() {
                     <Bar data={chartData} />
                 </div>
             )}
+
             {showForm && (
                 <div className="workout-form p-8 rounded-lg shadow-lg max-w-lg mx-auto">
                     <select
@@ -418,6 +531,7 @@ export default function Workout() {
                         }}
                         list="activity-suggestions"
                     />
+                    {errors.exercise && <div className="text-red-500">{errors.exercise}</div>}
                     <datalist id="activity-suggestions">
                         {activitySuggestions.map((activity, index) => (
                             <option key={index} value={activity} />
@@ -429,31 +543,36 @@ export default function Workout() {
                         value={editWorkout?.duration || newWorkout.duration || ""}
                         onChange={(e) => editWorkout ? setEditWorkout({ ...editWorkout, duration: parseInt(e.target.value) }) : setNewWorkout({ ...newWorkout, duration: parseInt(e.target.value) })}
                     />
+                    {errors.duration && <div className="text-red-500">{errors.duration}</div>}
                     <input className="w-full p-3 mb-4 border border-gray-300 rounded"
                         type="date"
                         placeholder="Date"
                         value={(editWorkout?.date instanceof Date ? editWorkout.date.toISOString().split('T')[0] : editWorkout?.date) || (newWorkout.date instanceof Date ? newWorkout.date.toISOString().split('T')[0] : newWorkout.date) || new Date().toISOString().split('T')[0]}
                         onChange={(e) => editWorkout ? setEditWorkout({ ...editWorkout, date: new Date(e.target.value) }) : setNewWorkout({ ...newWorkout, date: new Date(e.target.value) })}
                     />
+                    {errors.date && <div className="text-red-500">{errors.date}</div>}
                     <textarea className="w-full p-3 mb-4 border border-gray-300 rounded text-black"
                         placeholder="Description: Morning run in the park"
                         value={editWorkout?.description || newWorkout.description || ""}
                         onChange={(e) => editWorkout ? setEditWorkout({ ...editWorkout, description: e.target.value }) : setNewWorkout({ ...newWorkout, description: e.target.value })}
                     />
-                    {editWorkout ? (
-                        <div className="edit-buttons flex justify-between mt-4">
-                            <button className="btn btn-primary w-1/2 ml-2" onClick={handleUpdateWorkout}>Save</button>
-                            <button className="btn btn-secondary w-1/2 ml-2" onClick={handleCancelEdit}>Cancel</button>
-                        </div>
-                    ) : (
+                    {errors.description && <div className="text-red-500">{errors.description}</div>}
+                    <div className="button-container  justify-self-center">
+                        {editWorkout ? (
+                            <div className="buttons">
+                                <button onClick={handleSubmit}>Save</button>
+                                <button onClick={handleCancelEdit}>Cancel</button>
+                            </div>
+                        ) : (
 
-                        <div className="edit-buttons flex justify-between mt-4">
-                            <button className="btn btn-primary w-1/2 ml-2" onClick={handleAddWorkout}>Add</button>
-                            <button className="btn btn-secondary w-1/2 ml-2" onClick={handleCancelAdd}>Cancel</button>
-                        </div>
+                            <div className="buttons">
+                                <button onClick={handleSubmit}>Add</button>
+                                <button onClick={handleCancelAdd}>Cancel</button>
+                            </div>
 
 
-                    )}
+                        )}
+                    </div>
 
                 </div>
             )}
@@ -497,11 +616,11 @@ export default function Workout() {
                     </div>
 
                     <div className="pagination flex justify-center mt-6">
-                        <button onClick={handlePreviousPage} disabled={currentPage == 1} className="px-4 py-2 bg-gray-300 text-black rounded hover:bg-gray-400 transition-colors duration-300">
+                        <button onClick={handlePreviousPage} disabled={currentPage == 1} className="px-4 py-2 bg-gray-300 text-black rounded hover:bg-gray-400 transition-colors duration-300 w-32">
                             Previous
                         </button>
                         <span className="text-black mx-4">Page {currentPage} of {totalPages}</span>
-                        <button onClick={handleNextPage} disabled={currentPage == totalPages} className="px-4 py-2 bg-gray-300 text-black rounded hover:bg-gray-400 transition-colors duration-300">
+                        <button onClick={handleNextPage} disabled={currentPage == totalPages} className="px-4 py-2 bg-gray-300 text-black rounded hover:bg-gray-400 transition-colors duration-300 w-32">
                             Next
                         </button>
                     </div>

@@ -17,6 +17,7 @@ interface AuthContextType {
   updateProfile: (formData: object) => void;
   setLoading: (loading: boolean) => void;
   setIsAuth: (isAuth: boolean) => void;
+  forgotPassword: (email: string, birthdate: string, newPassword: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -191,6 +192,20 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setIsLoggedIn(false);
   };
 
+  const forgotPassword = async (email: string, birthdate: string, newPassword: string) => {
+    const res = await fetch("http://localhost:3000/api/forgot-password", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, birthdate, newPassword })
+    });
+    const data = await res.json();
+    if (data.token) {
+      localStorage.setItem("token", data.token);
+      setUser(data.user);
+    }
+    return data;
+  }
+
   return (
     <AuthContext.Provider
       value={{
@@ -207,6 +222,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         setLoading,
         setIsAuth,
         isLoggedIn,
+        forgotPassword
       }}
     >
       {children}
