@@ -290,4 +290,147 @@ button {
   transition: background-color 0.3s;
 }
 
+.admin-page {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #333; /* Dark grey background */
+  color: #fff; /* White text color */
+}
+
+.users-table {
+  width: 80%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  background-color: #444; /* Dark grey table background */
+  color: #fff; /* White text color */
+}
+
+.users-table th,
+.users-table td {
+  border: 1px solid #555; /* Medium grey border */
+  padding: 8px;
+  text-align: left;
+}
+
+.users-table th {
+  background-color: #555; /* Medium grey header background */
+  color: #fff; /* White text color */
+}
+
+.users-table tr:nth-child(even) {
+  background-color: #666; /* Lighter grey for even rows */
+}
+
+.users-table tr:hover {
+  background-color: #777; /* Slightly lighter grey on hover */
+}
+
+.users-table th {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  background-color: #555; /* Medium grey header background */
+  color: #fff; /* White text color */
+}
+
+button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+  color: #fff; /* White icon color */
+}
+
+button:hover {
+  color: #ccc; /* Light grey on hover */
+}
+
+.admin-page {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #333; /* Dark grey background */
+    color: #fff; /* White text color */
+}
+
+.users-table {
+    width: 80%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background-color: #444; /* Dark grey table background */
+    color: #fff; /* White text color */
+}
+
+.users-table th,
+.users-table td {
+    border: 1px solid #555; /* Medium grey border */
+    padding: 8px;
+    text-align: left;
+}
+
+.users-table th {
+    background-color: #555; /* Medium grey header background */
+    color: #fff; /* White text color */
+}
+
+.users-table tr:nth-child(even) {
+    background-color: #666; /* Lighter grey for even rows */
+}
+
+.users-table tr:hover {
+    background-color: #777; /* Slightly lighter grey on hover */
+}
+
+.users-table th {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    background-color: #555; /* Medium grey header background */
+    color: #fff; /* White text color */
+}
+
+button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    color: #fff; /* White icon color */
+}
+
+button:hover {
+    color: #ccc; /* Light grey on hover */
+}
+
+button.view {
+  color: #007BFF; /* Blue color for view icon */
+}
+
+button.trash {
+  color: #FF0000; /* Red color for trash icon */
+}
+
+.profile-container {
+  display: flex;
+  align-items: flex-start;
+  margin-top: 16px;
+}
+
+.back-button {
+  margin-right: 20px;
+  display: flex;
+  align-items: center;
+  color: #fff;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.back-button:hover {
+  color: #ccc;
+}
+
+.profile-card {
+  flex: 1;
+}
 

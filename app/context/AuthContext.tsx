@@ -12,6 +12,7 @@ interface AuthContextType {
   profileExists: boolean;
   isLoggedIn: boolean;
   quotes: any;
+  isAdmin: boolean;
   login: (email: string, password: string) => Promise<void>;
   register: (name: string, email: string, password: string) => Promise<void>;
   logout: () => void;
@@ -20,6 +21,7 @@ interface AuthContextType {
   setLoading: (loading: boolean) => void;
   setIsAuth: (isAuth: boolean) => void;
   forgotPassword: (email: string, birthdate: string, newPassword: string) => Promise<void>;
+  setAdmin: (isAdmin: boolean) => void;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -32,6 +34,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [profile, setProfile] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [quotes, setQuotes] = useState();
+  const [isAdmin, setAdmin] = useState(false);
 
   const host = process.env.NEXT_PUBLIC_API_URL;
 
@@ -46,7 +49,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     if (token) {
       try {
-        const res = await fetch(`${host}/api/quotes`, {
+        const res = await fetch(`http://localhost:3000/api/quotes`, {
           method: "GET",
           headers: { Authorization: `${token}` },
         });
@@ -81,7 +84,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     if (token && !isTokenExpired(token)) {
       try {
-        const res = await fetch(`${host}/api/profile`, {
+        const res = await fetch(`http://localhost:3000/api/profile`, {
           method: "GET",
           headers: { Authorization: `${token}` },
         });
@@ -94,6 +97,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           setIsAuth(true);
           setProfile(data.result);
           setProfileExists(!!data.result);
+          setAdmin(data.user.admin);
         } else if (res.status === 404) {
           setIsAuth(false);
           setProfileExists(false);
@@ -119,7 +123,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const token = localStorage.getItem("token");
 
     try {
-      const res = await fetch(`${host}/api/profile`, {
+      const res = await fetch(`http://localhost:3000/api/profile`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -165,7 +169,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
 
     try {
-      const res = await fetch(`${host}/api/profile`, {
+      const res = await fetch(`http://localhost:3000/api/profile`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -194,7 +198,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const register = async (name: string, email: string, password: string) => {
-    const res = await fetch(`${host}/api/register`, {
+    const res = await fetch(`http://localhost:3000/api/register`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name, email, password }),
@@ -209,7 +213,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const login = async (email: string, password: string) => {
-    const res = await fetch(`${host}/api/login`, {
+    const res = await fetch(`http://localhost:3000/api/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
@@ -220,6 +224,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setUser(data.user);
       setIsLoggedIn(true);
       setIsAuth(true);
+      console.log("admin data---------", data.user.admin);
+      setAdmin(data.user.admin);
       await fetchProfile();
     }
     return data;
@@ -264,7 +270,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         setIsAuth,
         isLoggedIn,
         forgotPassword,
-        quotes
+        quotes,
+        isAdmin,
+        setAdmin
       }}
     >
       {children}

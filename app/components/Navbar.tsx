@@ -12,13 +12,13 @@ const navigation = [
   { name: "Profile", href: "/profile" },
   { name: "Workouts", href: "/workout" },
   { name: "Progress", href: "/progress" },
-  { name: "Community", href: "/community" },
+  { name: "Community", href: "/community" }
 ];
 
 export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { logout, isLoggedIn }: any = useAuth();
+  const { logout, isLoggedIn, isAdmin }: any = useAuth();
 
   const handleLogout = () => {
     logout();
@@ -46,6 +46,11 @@ export default function Navbar() {
               {item.name}
             </a>
           ))}
+          {isAdmin ? (
+            <a href="/admin" className="text-lg font-semibold text-gray-900">
+              Admin
+            </a>
+          ) : null}
         </div>
         <div className="flex flex-1 items-center justify-end gap-x-6">
           {!isLoggedIn ? (
