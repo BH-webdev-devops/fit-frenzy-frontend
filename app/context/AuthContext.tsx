@@ -2,7 +2,7 @@
 "use client";
 
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { jwtDecode } from "jwt-decode";
+//import { jwtDecode } from "jwt-decode";
 
 interface AuthContextType {
   user: any;
@@ -35,11 +35,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const host = process.env.NEXT_PUBLIC_API_URL;
 
-  const isTokenExpired = (token: string): boolean => {
-    const decoded: any = jwtDecode(token);
-    const currentTime = Math.floor(Date.now() / 1000);
-    return decoded.exp < currentTime;
-  };
+  //const isTokenExpired = (token: string): boolean => {
+  //  const decoded: any = jwtDecode(token);
+  //  const currentTime = Math.floor(Date.now() / 1000);
+  //  return decoded.exp < currentTime;
+  //};
 
   const fetchQuotes = async () => {
     const token = localStorage.getItem("token");
