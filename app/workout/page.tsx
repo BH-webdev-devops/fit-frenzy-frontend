@@ -44,6 +44,7 @@ export default function Workout() {
     const [startDate, setStartDate] = useState<Date | null>(null);
     const [endDate, setEndDate] = useState<Date | null>(null);
     const [errors, setErrors] = useState<{ exercise?: string; type?: string; duration?: string; date?: string; description?: string }>({})
+    const host = process.env.NEXT_PUBLIC_API_URL;
     // const token = typeof window !== 'undefined' ? localStorage.getItem("token") : null;
 
 
@@ -52,7 +53,7 @@ export default function Workout() {
         const token = localStorage.getItem("token");
         if (token) {
             try {
-                const response = await fetch(`http://localhost:3000/api/workout/activity?category=${category}&filter=${filter}`, {
+                const response = await fetch(`${host}/api/workout/activity?category=${category}&filter=${filter}`, {
                     method: "GET",
                     headers: { Authorization: `${token}` }, // Ensure Bearer token format
                 });
@@ -73,7 +74,7 @@ export default function Workout() {
     const fetchFilteredWorkouts = async (page: number) => {
         const token = localStorage.getItem("token");
         try {
-            const response = await fetch(`http://localhost:3000/api/workout/filter?filterDate=${filterDate}&page=${page}&limit=9`, {
+            const response = await fetch(`${host}/api/workout/filter?filterDate=${filterDate}&page=${page}&limit=9`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -96,7 +97,7 @@ export default function Workout() {
     const handleFilterByDate = async (page: number) => {
         const token = localStorage.getItem("token");
         try {
-            const response = await fetch(`http://localhost:3000/api/workout/filter?filterDate=${filterDate}&startDate=${startDate}&endDate=${endDate}&page=${page}&limit=9`, {
+            const response = await fetch(`${host}/api/workout/filter?filterDate=${filterDate}&startDate=${startDate}&endDate=${endDate}&page=${page}&limit=9`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -135,7 +136,7 @@ export default function Workout() {
         const token = localStorage.getItem("token");
         if (token) {
             try {
-                const res = await fetch(`http://localhost:3000/api/workout?page=${page}&limit=9`, {
+                const res = await fetch(`${host}/api/workout?page=${page}&limit=9`, {
                     method: "GET",
                     headers: { Authorization: `${token}` }, // Ensure Bearer token format
                 });
@@ -179,7 +180,7 @@ export default function Workout() {
         const token = localStorage.getItem("token");
         if (token) {
             try {
-                const res = await fetch(`http://localhost:3000/api/workout`, {
+                const res = await fetch(`${host}/api/workout`, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
@@ -222,7 +223,7 @@ export default function Workout() {
         }
         const token = localStorage.getItem("token");
         try {
-            const response = await fetch(`http://localhost:3000/api/workout/${workout.id}`, {
+            const response = await fetch(`${host}/api/workout/${workout.id}`, {
                 method: 'DELETE',
                 headers: {
                     "Content-Type": "application/json",
@@ -250,7 +251,7 @@ export default function Workout() {
 
         if (token && editWorkout?.id) {
             try {
-                const res = await fetch(`http://localhost:3000/api/workout/${editWorkout.id}`, {
+                const res = await fetch(`${host}/api/workout/${editWorkout.id}`, {
                     method: "PUT",
                     headers: {
                         "Content-Type": "application/json",

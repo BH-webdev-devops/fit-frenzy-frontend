@@ -33,7 +33,7 @@ export default function Navbar() {
       >
         <div className="flex lg:flex-1">
           <Link href="/" className="m-1.5 p-1.5">
-            <p className="text-black text-2xl font-bold">FitFrenzy</p>
+            <img alt="FitFrenzy Logo" src="/2.png" className="w-32 h-24" />
           </Link>
         </div>
         <div className="hidden lg:flex lg:gap-x-12">
@@ -93,11 +93,7 @@ export default function Navbar() {
           <div className="flex items-center gap-x-6">
             <Link href="/" className="-m-1.5 p-1.5">
               <span className="sr-only">FitFrenzy</span>
-              <img
-                alt="FitFrenzy Logo"
-                src="/logo.png"
-                className="h-8 w-auto"
-              />
+              <img alt="FitFrenzy Logo" src="/2.png" className="w-20 h-18" />
             </Link>
             {!isLoggedIn ? (
               <a

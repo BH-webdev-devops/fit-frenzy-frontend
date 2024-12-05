@@ -6,11 +6,17 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "../context/AuthContext";
 import { useState, useEffect, useCallback } from "react";
 
+interface Video {
+  videoId: string;
+  title: string;
+  description: string;
+}
+
 export default function Exercise() {
-  const { setIsAuth, isLoggedIn }: any = useAuth();
+  const { setIsAuth, isAuth }: any = useAuth();
   const router = useRouter();
 
-  const YOUTUBE_API_KEY = "AIzaSyBAMPCWsBBl-sygmeX2nJmG_op6VFI8Yfo";
+  const youtubeKey = process.env.NEXT_PUBLIC_YOUTUBE_API_KEY;
   const YOUTUBE_API_URL = "https://www.googleapis.com/youtube/v3/search";
 
   const [exercises, setExercises] = useState([]);
@@ -20,13 +26,13 @@ export default function Exercise() {
   const fetchExercises = useCallback(
     async (query: string) => {
       const token = localStorage.getItem("token");
-      if (token && isLoggedIn) {
+      if (token) {
         setLoadingState(true);
         try {
           const res = await fetch(
             `${YOUTUBE_API_URL}?part=snippet&type=video&q=${encodeURIComponent(
               query
-            )}&key=${YOUTUBE_API_KEY}&maxResults=50`
+            )}&key=${youtubeKey}&maxResults=50`
           );
 
           if (res.ok) {
@@ -55,25 +61,21 @@ export default function Exercise() {
         setLoadingState(false);
       }
     },
-    [YOUTUBE_API_KEY, router, setIsAuth]
+    [youtubeKey, router, setIsAuth]
   );
 
   useEffect(() => {
-    const delayDebounce = setTimeout(() => {
-      if (searchQuery.trim()) {
-        fetchExercises(searchQuery);
-      }
-    }, 500);
-    return () => clearTimeout(delayDebounce);
-  }, [searchQuery, fetchExercises]);
-
-  useEffect(() => {
     const token = localStorage.getItem("token");
-    if (!token && !isLoggedIn) {
+    if (!token) {
       router.push("/login");
     }
-    fetchExercises(searchQuery);
-  }, [isLoggedIn]);
+  }, [isAuth, router]);
+
+  useEffect(() => {
+    if (searchQuery.trim() !== "") {
+      fetchExercises(searchQuery);
+    }
+  }, [searchQuery, fetchExercises]);
 
   return (
     <div className="bg-neutral-800 min-h-screen py-10 px-4 flex flex-col items-center">
@@ -94,7 +96,7 @@ export default function Exercise() {
       ) : exercises.length > 0 ? (
         <div className="w-full overflow-x-auto my-44">
           <div className="flex gap-10 justify-start items-start">
-            {exercises.map((video, index) => (
+            {exercises.map((video: Video, index) => (
               <div
                 key={index}
                 className="flex-none w-[400px] h-[600px] bg-white rounded-lg shadow-md p-4"

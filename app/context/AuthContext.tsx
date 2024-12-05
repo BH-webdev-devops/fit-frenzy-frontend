@@ -2,6 +2,7 @@
 "use client";
 
 import React, { createContext, useContext, useEffect, useState } from "react";
+import { jwtDecode } from "jwt-decode";
 
 interface AuthContextType {
   user: any;
@@ -10,6 +11,7 @@ interface AuthContextType {
   loading: boolean;
   profileExists: boolean;
   isLoggedIn: boolean;
+  quotes: any;
   login: (email: string, password: string) => Promise<void>;
   register: (name: string, email: string, password: string) => Promise<void>;
   logout: () => void;
@@ -29,6 +31,44 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [profileExists, setProfileExists] = useState(false);
   const [profile, setProfile] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [quotes, setQuotes] = useState();
+
+  const host = process.env.NEXT_PUBLIC_API_URL;
+
+  const isTokenExpired = (token: string): boolean => {
+    const decoded: any = jwtDecode(token);
+    const currentTime = Math.floor(Date.now() / 1000);
+    return decoded.exp < currentTime;
+  };
+
+  const fetchQuotes = async () => {
+    const token = localStorage.getItem("token");
+
+    if (token) {
+      try {
+        const res = await fetch(`${host}/api/quotes`, {
+          method: "GET",
+          headers: { Authorization: `${token}` },
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          setQuotes(data.result);
+        } else {
+          console.error("Error fetching quotes:", res.status, res.statusText);
+        }
+      } catch (err) {
+        console.log(err);
+        console.error(`Error fetching quotes: ${err}`);
+      }
+    } else {
+      console.error("No token found");
+    }
+  };
+
+  useEffect(() => {
+    fetchQuotes();
+  }, []);
 
   useEffect(() => {
     const token =
@@ -39,9 +79,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const fetchProfile = async () => {
     const token = localStorage.getItem("token");
 
-    if (token) {
+    if (token && !isTokenExpired(token)) {
       try {
-        const res = await fetch(`http://localhost:3000/api/profile`, {
+        const res = await fetch(`${host}/api/profile`, {
           method: "GET",
           headers: { Authorization: `${token}` },
         });
@@ -79,7 +119,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const token = localStorage.getItem("token");
 
     try {
-      const res = await fetch(`http://localhost:3000/api/profile`, {
+      const res = await fetch(`${host}/api/profile`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -125,7 +165,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
 
     try {
-      const res = await fetch(`http://localhost:3000/api/profile`, {
+      const res = await fetch(`${host}/api/profile`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -154,7 +194,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const register = async (name: string, email: string, password: string) => {
-    const res = await fetch("http://localhost:3000/api/register", {
+    const res = await fetch(`${host}/api/register`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name, email, password }),
@@ -169,7 +209,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const login = async (email: string, password: string) => {
-    const res = await fetch("http://localhost:3000/api/login", {
+    const res = await fetch(`${host}/api/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
@@ -179,6 +219,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       localStorage.setItem("token", data.token);
       setUser(data.user);
       setIsLoggedIn(true);
+      setIsAuth(true);
       await fetchProfile();
     }
     return data;
@@ -222,7 +263,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         setLoading,
         setIsAuth,
         isLoggedIn,
-        forgotPassword
+        forgotPassword,
+        quotes
       }}
     >
       {children}

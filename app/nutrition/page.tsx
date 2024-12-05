@@ -5,12 +5,24 @@ import React, { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../context/AuthContext";
 
+interface Recipe {
+  image: string;
+  label: string;
+  protein: number;
+  sugar: number;
+  calories: number;
+  fat: number;
+  id: string;
+  url: string;
+}
+
 export default function RecipeSearch() {
   const { setIsAuth, isLoggedIn }: any = useAuth();
   const router = useRouter();
 
-  const EDAMAM_API_KEY = "e1e01cc12d779523341b002ff8d89a6e";
-  const EDAMAM_API_ID = "48c625d6";
+  const edamamKey = process.env.NEXT_PUBLIC_EDAMAM_API_KEY;
+  const edamamID = process.env.NEXT_PUBLIC_EDAMAM_API_ID;
+  console.log(edamamID, edamamKey);
   const EDAMAM_API_URL = "https://api.edamam.com/api/recipes/v2";
 
   const [recipes, setRecipes] = useState([]);
@@ -29,7 +41,7 @@ export default function RecipeSearch() {
           const res = await fetch(
             `${EDAMAM_API_URL}?type=public&q=${encodeURIComponent(
               query
-            )}&app_id=${EDAMAM_API_ID}&app_key=${EDAMAM_API_KEY}`
+            )}&app_id=${edamamID}&app_key=${edamamKey}`
           );
 
           if (res.ok) {
@@ -65,17 +77,8 @@ export default function RecipeSearch() {
         setLoadingState(false);
       }
     },
-    [EDAMAM_API_ID, EDAMAM_API_KEY, router, setIsAuth, isLoggedIn]
+    [edamamID, edamamKey, router, setIsAuth, isLoggedIn]
   );
-
-  useEffect(() => {
-    const delayDebounce = setTimeout(() => {
-      if (searchQuery.trim()) {
-        fetchRecipes(searchQuery);
-      }
-    }, 500);
-    return () => clearTimeout(delayDebounce);
-  }, [searchQuery, fetchRecipes, isLoggedIn]);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -176,7 +179,7 @@ export default function RecipeSearch() {
       ) : recipes.length > 0 ? (
         <div className="w-full overflow-x-auto my-10">
           <div className="flex gap-10 justify-start items-start flex-nowrap my-44">
-            {recipes.map((recipe, index) => (
+            {recipes.map((recipe: Recipe, index) => (
               <div
                 key={index}
                 className="flex-none w-[400px] h-[600px] bg-white rounded-lg shadow-md p-4 py-8"
