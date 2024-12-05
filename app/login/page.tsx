@@ -31,12 +31,14 @@ const Login = () => {
     }
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const sanitizeInput = (input: any) => {
     const element = document.createElement('div');
     element.innerText = input;
     return element.innerHTML;
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const validateText = (input: any) => {
     const pattern = /^[a-zA-Z0-9 !_@-]+$/;
     return pattern.test(input);

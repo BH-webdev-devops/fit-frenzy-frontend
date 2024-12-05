@@ -25,10 +25,7 @@ interface Workout {
 export default function Workout() {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const {
-        user,
-        loading,
-        isAuth,
-        isLoggedIn
+        user
     }: // eslint-disable-next-line @typescript-eslint/no-explicit-any
         any = useAuth();
     const router = useRouter();
@@ -47,7 +44,7 @@ export default function Workout() {
     const host = process.env.NEXT_PUBLIC_API_URL;
     // const token = typeof window !== 'undefined' ? localStorage.getItem("token") : null;
 
-
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const fetchActivitySuggestions = async (category: string, filter: any) => {
         console.log("Fetching activity suggestions");
         const token = localStorage.getItem("token");
@@ -118,7 +115,7 @@ export default function Workout() {
     }
 
 
-
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleFilterChange = (event: any) => {
         if (event.target.value) {
             // setCurrentPage(1);
@@ -321,12 +318,14 @@ export default function Workout() {
     };
 
     // Utility function to sanitize inputs
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const sanitizeInput = (input: any) => {
         const element = document.createElement('div');
         element.innerText = input;
         return element.innerHTML;
     };
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const validateText = (input: any) => {
         const pattern = /^[a-zA-Z0-9 !_-]+$/;
         return pattern.test(input);
@@ -526,7 +525,7 @@ export default function Workout() {
                         placeholder="Running 5 miles"
                         value={editWorkout?.exercise || newWorkout.exercise || ""}
                         onChange={(e) => {
-                            const value = e.target.value;
+                            const value = e.target.value; // eslint-disable-next-line @typescript-eslint/no-unused-expressions
                             editWorkout ? setEditWorkout({ ...editWorkout, exercise: value }) : setNewWorkout({ ...newWorkout, exercise: value });
                             fetchActivitySuggestions(newWorkout.type || editWorkout?.type || '', value);
                         }}

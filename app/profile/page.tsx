@@ -1,5 +1,4 @@
 "use client";
-import { error } from "console";
 import { useAuth } from "../context/AuthContext";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -24,7 +23,7 @@ export default function Profile() {
     isLoggedIn,
     quotes,
   }: // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  any = useAuth();
+    any = useAuth();
   const router = useRouter();
 
   const [profileForm, setProfileForm] = useState({
@@ -132,12 +131,14 @@ export default function Profile() {
     return <p>Loading...</p>;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const sanitizeInput = (input: any) => {
     const element = document.createElement('div');
     element.innerText = input;
     return element.innerHTML;
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const validateText = (input: any) => {
     const pattern = /^[a-zA-Z0-9 !_@-]+$/;
     return pattern.test(input);
