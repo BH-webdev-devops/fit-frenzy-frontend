@@ -101,7 +101,7 @@ export default function Profile() {
 
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (validate()) {
+    if (validateProfile()) {
       const result = await addProfile(profileForm);
 
       if (result.success) {
@@ -114,7 +114,7 @@ export default function Profile() {
 
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (validate()) {
+    if (validateUser() && validateProfile()) {
       const combinedData = { ...profileForm, ...userForm };
       const result = await updateProfile(combinedData);
 
@@ -168,27 +168,13 @@ export default function Profile() {
     return pattern.test(input);
   };
 
-  const validate = () => {
-    const errors: {
-      name?: string;
-      email?: string;
-      password?: string;
-      age?: string;
-      weight?: string;
-      height?: string;
-      location?: string;
-      birthday?: string;
-      bio?: string;
-    } = {};
-
+  const validateUser = () => {
+    const userErrors: { name?: string; email?: string; password?: string } = {};
     const sanitizedForm = {
       name: sanitizeInput(userForm.name),
       email: sanitizeInput(userForm.email),
       password: sanitizeInput(userForm.password),
-      location: sanitizeInput(profileForm.location),
-      bio: sanitizeInput(profileForm.bio),
     };
-
     if (!sanitizedForm.name) {
       errors.name = "Name is required";
     } else if (!validateText(sanitizedForm.name)) {
@@ -208,6 +194,24 @@ export default function Profile() {
     } else if (!validateText(sanitizedForm.password)) {
       errors.password = "Invalid password";
     }
+    setErrors(userErrors);
+    return Object.keys(userErrors).length === 0;
+  };
+
+  const validateProfile = () => {
+    const errors: {
+      age?: string;
+      weight?: string;
+      height?: string;
+      location?: string;
+      birthday?: string;
+      bio?: string;
+    } = {};
+
+    const sanitizedForm = {
+      location: sanitizeInput(profileForm.location),
+      bio: sanitizeInput(profileForm.bio),
+    };
 
     if (!profileForm.age) {
       errors.age = "Age is required";
@@ -227,7 +231,7 @@ export default function Profile() {
       errors.height = "Invalid height";
     }
 
-    if (!validateText(sanitizedForm.location)) {
+    if (sanitizedForm.location && !validateText(sanitizedForm.location)) {
       errors.location = "Invalid location";
     }
 
@@ -237,7 +241,7 @@ export default function Profile() {
       errors.birthday = "Invalid birthday";
     }
 
-    if (!validateText(sanitizedForm.bio)) {
+    if (sanitizedForm.bio && !validateText(sanitizedForm.bio)) {
       errors.bio = "Invalid bio";
     }
 
@@ -508,7 +512,7 @@ export default function Profile() {
               )}
             </div>
           ) : (
-            <div className="mt-6 sm:mx-auto sm:w-full sm:max-w-sm text-black">
+            <div className="mt-6 sm:mx-auto sm:w-full sm:max-w-sm text-black min-w-[380px]">
               <form onSubmit={handleFormSubmit} className="space-y-6 mt-16">
                 <h2 className="text-2xl font-semibold text-white mb-4">
                   Create your profile!
@@ -525,63 +529,96 @@ export default function Profile() {
                   <option value="Male">Male</option>
                   <option value="Other">Other</option>
                 </select>
-                <input
-                  type="number"
-                  placeholder="Age*"
-                  value={profileForm.age}
-                  onChange={(e) =>
-                    setProfileForm({ ...profileForm, age: e.target.value })
-                  }
-                  className="w-full p-3 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:ring focus:ring-blue-300 mt-2"
-                />
+                <div>
+                  <input
+                    type="number"
+                    placeholder="Age"
+                    value={profileForm.age}
+                    onChange={(e) =>
+                      setProfileForm({ ...profileForm, age: e.target.value })
+                    }
+                    className="w-full p-4 border border-gray-300 rounded-lg mb-1 focus:outline-none focus:ring focus:ring-blue-300"
+                  />
+                </div>
+                {errors.age && (
+                  <p className="text-red-500 text-xs mt-1">{errors.age}</p>
+                )}
 
-                <input
-                  type="number"
-                  placeholder="Weight*"
-                  value={profileForm.weight}
-                  onChange={(e) =>
-                    setProfileForm({ ...profileForm, weight: e.target.value })
-                  }
-                  className="w-full p-3 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:ring focus:ring-blue-300 mt-2"
-                />
+                <div>
+                  <input
+                    type="number"
+                    placeholder="Weight (kg)"
+                    value={profileForm.weight}
+                    onChange={(e) =>
+                      setProfileForm({
+                        ...profileForm,
+                        weight: e.target.value,
+                      })
+                    }
+                    className="w-full p-4 border border-gray-300 rounded-lg mb-1 focus:outline-none focus:ring focus:ring-blue-300"
+                  />
+                </div>
+                {errors.weight && (
+                  <p className="text-red-500 text-xs mt-1">{errors.weight}</p>
+                )}
 
-                <input
-                  type="number"
-                  placeholder="Height*"
-                  value={profileForm.height}
-                  onChange={(e) =>
-                    setProfileForm({ ...profileForm, height: e.target.value })
-                  }
-                  className="w-full p-3 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:ring focus:ring-blue-300 mt-2"
-                />
-
+                <div>
+                  <input
+                    type="number"
+                    placeholder="Height (cm)"
+                    value={profileForm.height}
+                    onChange={(e) =>
+                      setProfileForm({
+                        ...profileForm,
+                        height: e.target.value,
+                      })
+                    }
+                    className="w-full p-4 border border-gray-300 rounded-lg mb-1 focus:outline-none focus:ring focus:ring-blue-300"
+                  />
+                </div>
+                {errors.height && (
+                  <p className="text-red-500 text-xs mt-1">{errors.height}</p>
+                )}
                 <textarea
                   placeholder="Bio"
                   value={profileForm.bio}
                   onChange={(e) =>
                     setProfileForm({ ...profileForm, bio: e.target.value })
                   }
-                  className="w-full p-3 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:ring focus:ring-blue-300 mt-2"
+                  className="w-full p-4 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:ring focus:ring-blue-300 mt-2"
                 />
-
+                {errors.bio && (
+                  <p className="text-red-500 text-xs mt-1">{errors.bio}</p>
+                )}
                 <input
                   type="text"
                   placeholder="Location"
                   value={profileForm.location}
                   onChange={(e) =>
-                    setProfileForm({ ...profileForm, location: e.target.value })
+                    setProfileForm({
+                      ...profileForm,
+                      location: e.target.value,
+                    })
                   }
-                  className="w-full p-3 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:ring focus:ring-blue-300 mt-2"
+                  className="w-full p-4 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:ring focus:ring-blue-300 mt-2"
                 />
-
+                {errors.location && (
+                  <p className="text-red-500 text-xs mt-1">{errors.location}</p>
+                )}
                 <input
                   type="date"
                   value={profileForm.birthday}
                   onChange={(e) =>
-                    setProfileForm({ ...profileForm, birthday: e.target.value })
+                    setProfileForm({
+                      ...profileForm,
+                      birthday: e.target.value,
+                    })
                   }
-                  className="w-full p-3 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:ring focus:ring-blue-300 mt-2"
+                  className="w-full p-4 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:ring focus:ring-blue-300 mt-2"
                 />
+                {errors.birthday && (
+                  <p className="text-red-500 text-xs mt-1">{errors.birthday}</p>
+                )}
 
                 <button
                   type="submit"

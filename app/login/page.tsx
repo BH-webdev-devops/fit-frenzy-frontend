@@ -20,7 +20,6 @@ const Login = () => {
     e.preventDefault();
     try {
       const response = await login(email, password);
-      console.log(response);
       if (response.message === "Login successful") {
         router.push("/profile");
       } else if (response.message === "Invalid credentials") {
@@ -61,7 +60,6 @@ const Login = () => {
       errors.newPassword = "Invalid password";
     }
     setErrors(errors);
-    console.log(errors);
     return Object.keys(errors).length === 0;
   };
 

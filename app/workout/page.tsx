@@ -46,7 +46,6 @@ export default function Workout() {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const fetchActivitySuggestions = async (category: string, filter: any) => {
-        console.log("Fetching activity suggestions");
         const token = localStorage.getItem("token");
         if (token) {
             try {
@@ -60,7 +59,6 @@ export default function Workout() {
                 } else {
                     console.error('Error fetching activity suggestions:', response.status, response.statusText);
                 }
-                console.log("Activity Suggestions:", activitySuggestions);
             } catch (error) {
                 console.error('Error fetching activity suggestions:', error);
             }
@@ -129,7 +127,6 @@ export default function Workout() {
     }
 
     const fetchWorkouts = async (page: number) => {
-        console.log("fetching workouts", page);
         const token = localStorage.getItem("token");
         if (token) {
             try {
@@ -140,13 +137,11 @@ export default function Workout() {
 
                 if (res.ok) {
                     const data = await res.json();
-                    console.log("Fetched data:", data);
                     setWorkouts(data.result);
                     setCurrentPage(data.pagination.currentPage);
                     setTotalPages(data.pagination.totalPages);
                 } else if (!user) {
                     const errorText = await res.text();
-                    console.log(res)
                     console.error("Error fetching workouts:", res.status, res.statusText, errorText);
                 }
             } catch (err) {
@@ -170,7 +165,6 @@ export default function Workout() {
         if (currentPage < totalPages) {
             setCurrentPage(currentPage + 1);
         }
-        console.log("Current Page:", currentPage);
     };
 
     const handleAddWorkout = async () => {
@@ -203,7 +197,6 @@ export default function Workout() {
     };
 
     const handleEditWorkout = (workout: Workout) => {
-        console.log("Setting edit workout:", workout); // Debugging log
         setEditWorkout(workout);
         setShowForm(true);
     };
@@ -243,8 +236,6 @@ export default function Workout() {
 
     const handleUpdateWorkout = async () => {
         const token = localStorage.getItem("token");
-        console.log("Token for update:", token); // Debugging log
-        console.log("Edit Workout:", editWorkout); // Debugging log
 
         if (token && editWorkout?.id) {
             try {
