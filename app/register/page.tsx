@@ -11,7 +11,11 @@ const Register = () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { register }: any = useAuth();
   const router = useRouter();
-  const [errors, setErrors] = useState<{ name?: string, email?: string, password?: string }>({});
+  const [errors, setErrors] = useState<{
+    name?: string;
+    email?: string;
+    password?: string;
+  }>({});
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -31,7 +35,7 @@ const Register = () => {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const sanitizeInput = (input: any) => {
-    const element = document.createElement('div');
+    const element = document.createElement("div");
     element.innerText = input;
     return element.innerHTML;
   };
@@ -43,41 +47,36 @@ const Register = () => {
   };
 
   const validate = () => {
-    const errors: { name?: string, email?: string, password?: string } = {};
-    console.log('inside validation')
+    const errors: { name?: string; email?: string; password?: string } = {};
     const sanitizedForm = {
       name: sanitizeInput(name),
       email: sanitizeInput(email),
-      password: sanitizeInput(password)
+      password: sanitizeInput(password),
     };
 
     if (!sanitizedForm.name) {
-      errors.name = 'Name is required';
+      errors.name = "Name is required";
     } else if (!validateText(sanitizedForm.name)) {
-      errors.name = 'Invalid name';
+      errors.name = "Invalid name";
     }
 
     if (!sanitizedForm.email) {
-      errors.email = 'Email is required';
+      errors.email = "Email is required";
     } else if (!validateText(sanitizedForm.email)) {
-      errors.email = 'Invalid email';
+      errors.email = "Invalid email";
     }
 
     if (!sanitizedForm.password) {
-      errors.password = 'Password is required';
+      errors.password = "Password is required";
     } else if (sanitizedForm.password.length < 8) {
-      errors.password = 'Password must be at least 8 characters long';
+      errors.password = "Password must be at least 8 characters long";
     } else if (!validateText(sanitizedForm.password)) {
-      errors.password = 'Invalid password';
+      errors.password = "Invalid password";
     }
     setErrors(errors);
     console.log(errors);
     return Object.keys(errors).length === 0;
-
-  }
-
-
-
+  };
 
   return (
     <>
@@ -101,13 +100,16 @@ const Register = () => {
                 <input
                   id="name"
                   name="name"
+                  placeholder="Name"
                   type="text"
                   onChange={(e) => setName(e.target.value)}
                   required
                   className="block w-full rounded-md border-0 py-3 px-4 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-neutral-500"
                 />
               </div>
-              {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
+              {errors.name && (
+                <p className="text-red-500 text-xs mt-1">{errors.name}</p>
+              )}
             </div>
 
             <div>
@@ -124,11 +126,13 @@ const Register = () => {
                   type="email"
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  autoComplete="email"
+                  placeholder="Email"
                   className="block w-full rounded-md border-0 py-3 px-4 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-neutral-500"
                 />
               </div>
-              {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
+              {errors.email && (
+                <p className="text-red-500 text-xs mt-1">{errors.email}</p>
+              )}
             </div>
 
             <div>
@@ -145,17 +149,19 @@ const Register = () => {
                   type="password"
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  autoComplete="current-password"
+                  placeholder="Password"
                   className="block w-full rounded-md border-0 py-3 px-4 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-neutral-500"
                 />
               </div>
-              {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password}</p>}
+              {errors.password && (
+                <p className="text-red-500 text-xs mt-1">{errors.password}</p>
+              )}
             </div>
 
             <div>
               <button
                 type="submit"
-                className="flex w-full justify-center rounded-md bg-neutral-400 px-4 py-3 text-lg font-semibold text-black shadow-sm hover:bg-neutral-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-400"
+                className="flex w-full justify-center rounded-md bg-blue-500 px-4 py-3 text-lg font-semibold shadow-sm hover:bg-neutral-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-400"
               >
                 Register
               </button>

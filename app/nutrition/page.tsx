@@ -22,20 +22,18 @@ export default function RecipeSearch() {
 
   const edamamKey = process.env.NEXT_PUBLIC_EDAMAM_API_KEY;
   const edamamID = process.env.NEXT_PUBLIC_EDAMAM_API_ID;
-  console.log(edamamID, edamamKey);
   const EDAMAM_API_URL = "https://api.edamam.com/api/recipes/v2";
 
   const [recipes, setRecipes] = useState([]);
   const [savedRecipes, setSavedRecipes] = useState<any[]>([]);
-  const [searchQuery, setSearchQuery] = useState("salad");
+  const [searchQuery, setSearchQuery] = useState("Healthy");
   const [loading, setLoadingState] = useState(false);
   const [showSavedRecipes, setShowSavedRecipes] = useState(false);
 
   const fetchRecipes = useCallback(
     async (query: string) => {
       const token = localStorage.getItem("token");
-      console.log(isLoggedIn);
-      if (token && isLoggedIn) {
+      if (token) {
         setLoadingState(true);
         try {
           const res = await fetch(
@@ -126,7 +124,7 @@ export default function RecipeSearch() {
       <h1 className="text-3xl font-bold text-center mb-8 text-white">
         Find the perfect recipe for today!
       </h1>
-      <div className="w-full flex justify-center mb-6 p-4">
+      <div className="w-full flex justify-center mb-6 p-4 text-black">
         <input
           type="text"
           placeholder="Search recipes..."
@@ -177,8 +175,8 @@ export default function RecipeSearch() {
       {loading ? (
         <p className="text-center text-white">Loading recipes...</p>
       ) : recipes.length > 0 ? (
-        <div className="w-full overflow-x-auto my-10">
-          <div className="flex gap-10 justify-start items-start flex-nowrap my-44">
+        <div className="w-full overflow-x-auto my-2">
+          <div className="flex gap-10 justify-start items-start flex-nowrap my-24">
             {recipes.map((recipe: Recipe, index) => (
               <div
                 key={index}
@@ -204,7 +202,7 @@ export default function RecipeSearch() {
                   href={recipe.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="block text-center text-gray-500 mt-4"
+                  className="block text-center text-blue-500 mt-4 underline"
                 >
                   View Recipe
                 </a>

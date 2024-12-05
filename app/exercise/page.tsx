@@ -32,7 +32,7 @@ export default function Exercise() {
           const res = await fetch(
             `${YOUTUBE_API_URL}?part=snippet&type=video&q=${encodeURIComponent(
               query
-            )}&key=${youtubeKey}&maxResults=50`
+            )}&key=${youtubeKey}&maxResults=10`
           );
 
           if (res.ok) {
@@ -82,7 +82,7 @@ export default function Exercise() {
       <h1 className="text-3xl font-bold text-center mb-8 text-white">
         Find a perfect workout for today!
       </h1>
-      <div className="w-full flex justify-center mb-6 p-4">
+      <div className="w-full flex justify-center mb-6 p-4 text-black">
         <input
           type="text"
           placeholder="Search videos..."
@@ -94,7 +94,7 @@ export default function Exercise() {
       {loading ? (
         <p className="text-center text-white">Loading videos...</p>
       ) : exercises.length > 0 ? (
-        <div className="w-full overflow-x-auto my-44">
+        <div className="w-full overflow-x-auto my-24">
           <div className="flex gap-10 justify-start items-start">
             {exercises.map((video: Video, index) => (
               <div

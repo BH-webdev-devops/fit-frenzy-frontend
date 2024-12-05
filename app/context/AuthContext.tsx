@@ -2,6 +2,7 @@
 "use client";
 
 import React, { createContext, useContext, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { jwtDecode } from "jwt-decode";
 
 interface AuthContextType {
@@ -37,12 +38,26 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [isAdmin, setAdmin] = useState(false);
 
   const host = process.env.NEXT_PUBLIC_API_URL;
+  const router = useRouter();
 
-  const isTokenExpired = (token: string): boolean => {
-    const decoded: any = jwtDecode(token);
-    const currentTime = Math.floor(Date.now() / 1000);
-    return decoded.exp < currentTime;
+  const isTokenExpired = (token: string | null): boolean => {
+    if (!token) return true;
+    try {
+      const decoded: any = jwtDecode(token);
+      const currentTime = Math.floor(Date.now() / 1000);
+      return decoded.exp < currentTime;
+    } catch (error) {
+      console.error(error);
+      return true;
+    }
   };
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (isTokenExpired(token)) {
+      logout();
+    }
+  }, []);
 
   const fetchQuotes = async () => {
     const token = localStorage.getItem("token");
@@ -61,11 +76,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           console.error("Error fetching quotes:", res.status, res.statusText);
         }
       } catch (err) {
-        console.log(err);
         console.error(`Error fetching quotes: ${err}`);
       }
     } else {
-      console.error("No token found");
+      return;
     }
   };
 
@@ -81,8 +95,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const fetchProfile = async () => {
     const token = localStorage.getItem("token");
-
-    if (token && !isTokenExpired(token)) {
+    if (token) {
       try {
         const res = await fetch(`${host}/api/profile`, {
           method: "GET",
@@ -91,7 +104,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
         if (res.ok) {
           const data = await res.json();
-          console.log(data);
 
           setUser(data.user);
           setIsAuth(true);
@@ -237,13 +249,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setIsAuth(false);
     setProfileExists(false);
     setIsLoggedIn(false);
+    router.push("/login");
   };
 
   const forgotPassword = async (email: string, birthdate: string, newPassword: string) => {
     const res = await fetch("${host}/api/forgot-password", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, birthdate, newPassword })
+      body: JSON.stringify({ email, birthdate, newPassword }),
     });
     const data = await res.json();
     if (data.token) {
@@ -251,7 +264,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setUser(data.user);
     }
     return data;
-  }
+  };
 
   return (
     <AuthContext.Provider
