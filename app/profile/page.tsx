@@ -30,7 +30,7 @@ export default function Profile() {
     isLoggedIn,
     quotes,
   }: // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  any = useAuth();
+    any = useAuth();
   const router = useRouter();
 
   const [randomQuote, setRandomQuote] = useState("Keep pushing forward!");
@@ -52,6 +52,7 @@ export default function Profile() {
   });
 
   const [isEditing, setIsEditing] = useState(false);
+  const [errors, setErrors] = useState<{ name?: string, email?: string, password?: string, age?: string, weight?: string, height?: string, location?: string, birthday?: string, bio?: string }>({});
 
   useEffect(() => {
     if (profile) {
@@ -90,25 +91,29 @@ export default function Profile() {
 
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const result = await addProfile(profileForm);
+    if (validate()) {
+      const result = await addProfile(profileForm);
 
-    if (result.success) {
-      router.push("/profile");
-    } else {
-      alert(result.message);
-    }
-  };
+      if (result.success) {
+        router.push("/profile");
+      } else {
+        alert(result.message);
+      }
+    };
+  }
 
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
-    const combinedData = { ...profileForm, ...userForm };
-    const result = await updateProfile(combinedData);
+    if (validate()) {
+      const combinedData = { ...profileForm, ...userForm };
+      const result = await updateProfile(combinedData);
 
-    if (result.success) {
-      router.push("/profile");
-      setIsEditing(false);
-    } else {
-      alert(result.details);
+      if (result.success) {
+        router.push("/profile");
+        setIsEditing(false);
+      } else {
+        alert(result.details);
+      }
     }
   };
 
@@ -140,6 +145,87 @@ export default function Profile() {
     return <p>Loading...</p>;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const sanitizeInput = (input: any) => {
+    const element = document.createElement('div');
+    element.innerText = input;
+    return element.innerHTML;
+  };
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const validateText = (input: any) => {
+    const pattern = /^[a-zA-Z0-9 !_@-]+$/;
+    return pattern.test(input);
+  };
+
+  const validate = () => {
+    const errors: { name?: string, email?: string, password?: string, age?: string, weight?: string, height?: string, location?: string, birthday?: string, bio?: string } = {};
+
+    const sanitizedForm = {
+      name: sanitizeInput(userForm.name),
+      email: sanitizeInput(userForm.email),
+      password: sanitizeInput(userForm.password),
+      location: sanitizeInput(profileForm.location),
+      bio: sanitizeInput(profileForm.bio),
+    };
+
+    if (!sanitizedForm.name) {
+      errors.name = 'Name is required';
+    } else if (!validateText(sanitizedForm.name)) {
+      errors.name = 'Invalid name';
+    }
+
+    if (!sanitizedForm.email) {
+      errors.email = 'Email is required';
+    } else if (!validateText(sanitizedForm.email)) {
+      errors.email = 'Invalid email';
+    }
+
+    if (!sanitizedForm.password) {
+      errors.password = 'Password is required';
+    } else if (sanitizedForm.password.length < 8) {
+      errors.password = 'Password must be at least 8 characters long';
+    } else if (!validateText(sanitizedForm.password)) {
+      errors.password = 'Invalid password';
+    }
+
+    if (!profileForm.age) {
+      errors.age = 'Age is required';
+    } else if (isNaN(Number(profileForm.age))) {
+      errors.age = 'Invalid age';
+    }
+
+    if (!profileForm.weight) {
+      errors.weight = 'Weight is required';
+    } else if (isNaN(Number(profileForm.weight))) {
+      errors.weight = 'Invalid weight';
+    }
+
+    if (!profileForm.height) {
+      errors.height = 'Height is required';
+    } else if (isNaN(Number(profileForm.height))) {
+      errors.height = 'Invalid height';
+    }
+
+    if (!validateText(sanitizedForm.location)) {
+      errors.location = 'Invalid location';
+    }
+
+    if (!profileForm.birthday) {
+      errors.birthday = 'Birthday is required';
+    } else if (isNaN(Date.parse(profileForm.birthday))) {
+      errors.birthday = 'Invalid birthday';
+    }
+
+    if (!validateText(sanitizedForm.bio)) {
+      errors.bio = 'Invalid bio';
+    }
+
+    setErrors(errors);
+    return Object.keys(errors).length === 0;
+
+  }
+
   return (
     <div className="flex flex-col items-center text-center p-6 bg-neutral-800 min-h-screen text-white py-24">
       {loading ? (
@@ -161,24 +247,31 @@ export default function Profile() {
                     Update Your Profile
                   </h1>
 
-                  <input
-                    type="text"
-                    placeholder="Name"
-                    value={userForm.name}
-                    onChange={(e) =>
-                      setUserForm({ ...userForm, name: e.target.value })
-                    }
-                    className="w-full p-4 border border-gray-300 rounded-lg mb-1 focus:outline-none focus:ring focus:ring-blue-300"
-                  />
-                  <input
-                    type="email"
-                    placeholder="Email"
-                    value={userForm.email}
-                    onChange={(e) =>
-                      setUserForm({ ...userForm, email: e.target.value })
-                    }
-                    className="w-full p-4 border border-gray-300 rounded-lg mb-1 focus:outline-none focus:ring focus:ring-blue-300"
-                  />
+                  <div>
+                    <input
+                      type="text"
+                      placeholder="Name"
+                      value={userForm.name}
+                      onChange={(e) =>
+                        setUserForm({ ...userForm, name: e.target.value })
+                      }
+                      className="w-full p-4 border border-gray-300 rounded-lg mb-1 focus:outline-none focus:ring focus:ring-blue-300"
+                    />
+                    {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
+                  </div>
+
+                  <div>
+                    <input
+                      type="email"
+                      placeholder="Email"
+                      value={userForm.email}
+                      onChange={(e) =>
+                        setUserForm({ ...userForm, email: e.target.value })
+                      }
+                      className="w-full p-4 border border-gray-300 rounded-lg mb-1 focus:outline-none focus:ring focus:ring-blue-300"
+                    />
+                    {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
+                  </div>
 
                   <input
                     type="password"
@@ -194,7 +287,9 @@ export default function Profile() {
                       }));
                     }}
                     className="w-full p-4 border border-gray-300 rounded-lg mb-1 focus:outline-none focus:ring focus:ring-blue-300"
+
                   />
+                  {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password}</p>}
 
                   <select
                     value={profileForm.gender}
@@ -208,41 +303,50 @@ export default function Profile() {
                     <option value="Male">Male</option>
                     <option value="Other">Other</option>
                   </select>
+                 <div>
+                    <input
+                      type="number"
+                      placeholder="Age"
+                      value={profileForm.age}
+                      onChange={(e) =>
+                        setProfileForm({ ...profileForm, age: e.target.value })
+                      }
+                      className="w-full p-4 border border-gray-300 rounded-lg mb-1 focus:outline-none focus:ring focus:ring-blue-300"
+                    />
+                  </div>
+                  {errors.age && <p className="text-red-500 text-xs mt-1">{errors.age}</p>}
 
-                  <input
-                    type="number"
-                    placeholder="Age"
-                    value={profileForm.age}
-                    onChange={(e) =>
-                      setProfileForm({ ...profileForm, age: e.target.value })
-                    }
-                    className="w-full p-4 border border-gray-300 rounded-lg mb-1 focus:outline-none focus:ring focus:ring-blue-300"
-                  />
+                  <div>
+                    <input
+                      type="number"
+                      placeholder="Weight (kg)"
+                      value={profileForm.weight}
+                      onChange={(e) =>
+                        setProfileForm({
+                          ...profileForm,
+                          weight: e.target.value,
+                        })
+                      }
+                      className="w-full p-4 border border-gray-300 rounded-lg mb-1 focus:outline-none focus:ring focus:ring-blue-300"
+                    />
+                  </div>
+                  {errors.weight && <p className="text-red-500 text-xs mt-1">{errors.weight}</p>}
 
-                  <input
-                    type="number"
-                    placeholder="Weight"
-                    value={profileForm.weight}
-                    onChange={(e) =>
-                      setProfileForm({
-                        ...profileForm,
-                        weight: e.target.value,
-                      })
-                    }
-                    className="w-full p-4 border border-gray-300 rounded-lg mb-1 focus:outline-none focus:ring focus:ring-blue-300"
-                  />
-                  <input
-                    type="number"
-                    placeholder="Height"
-                    value={profileForm.height}
-                    onChange={(e) =>
-                      setProfileForm({
-                        ...profileForm,
-                        height: e.target.value,
-                      })
-                    }
-                    className="w-full p-4 border border-gray-300 rounded-lg mb-1 focus:outline-none focus:ring focus:ring-blue-300"
-                  />
+                  <div>
+                    <input
+                      type="number"
+                      placeholder="Height (cm)"
+                      value={profileForm.height}
+                      onChange={(e) =>
+                        setProfileForm({
+                          ...profileForm,
+                          height: e.target.value,
+                        })
+                      }
+                      className="w-full p-4 border border-gray-300 rounded-lg mb-1 focus:outline-none focus:ring focus:ring-blue-300"
+                    />
+                  </div>
+                  {errors.height && <p className="text-red-500 text-xs mt-1">{errors.height}</p>}
                   <textarea
                     placeholder="Bio"
                     value={profileForm.bio}
@@ -251,6 +355,7 @@ export default function Profile() {
                     }
                     className="w-full p-4 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:ring focus:ring-blue-300 mt-2"
                   />
+                  {errors.bio && <p className="text-red-500 text-xs mt-1">{errors.bio}</p>}
                   <input
                     type="text"
                     placeholder="Location"
@@ -263,6 +368,7 @@ export default function Profile() {
                     }
                     className="w-full p-4 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:ring focus:ring-blue-300 mt-2"
                   />
+                  {errors.location && <p className="text-red-500 text-xs mt-1">{errors.location}</p>}
                   <input
                     type="date"
                     value={profileForm.birthday}
@@ -274,6 +380,7 @@ export default function Profile() {
                     }
                     className="w-full p-4 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:ring focus:ring-blue-300 mt-2"
                   />
+                  {errors.birthday && <p className="text-red-500 text-xs mt-1">{errors.birthday}</p>}
 
                   <div className="flex justify-between">
                     <button
