@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { useRouter } from "next/navigation";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { FaEdit, FaTrash, FaEye, FaArrowLeft } from 'react-icons/fa';
@@ -21,6 +22,8 @@ interface Profile {
     location: "",
     birthday: "",
 };
+
+const host = process.env.NEXT_PUBLIC_API_URL;
 
 export default function Admin() {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
