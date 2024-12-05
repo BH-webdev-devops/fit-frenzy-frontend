@@ -64,46 +64,50 @@ export default function Progress() {
 
   const fetchWeightEntries = async () => {
     const token = localStorage.getItem("token");
-    try {
-      const response = await fetch(`${host}/api/profile/weight`, {
-        method: "GET",
-        headers: { Authorization: `${token}` },
-      });
-      if (response.ok) {
-        const data = await response.json();
-        setWeightEntries(data.result);
-      } else {
-        console.error(
-          "Error fetching weight entries:",
-          response.status,
-          response.statusText
-        );
+    if (token) {
+      try {
+        const response = await fetch(`${host}/api/profile/weight`, {
+          method: "GET",
+          headers: { Authorization: `${token}` },
+        });
+        if (response.ok) {
+          const data = await response.json();
+          setWeightEntries(data.result);
+        } else {
+          console.error(
+            "Error fetching weight entries:",
+            response.status,
+            response.statusText
+          );
+        }
+      } catch (error) {
+        console.error("Error fetching weight entries:", error);
       }
-    } catch (error) {
-      console.error("Error fetching weight entries:", error);
     }
   };
 
   const fetchWorkoutEntries = async () => {
     const token = localStorage.getItem("token");
-    try {
-      const response = await fetch(`${host}/api/workout/all`, {
-        method: "GET",
-        headers: { Authorization: `${token}` },
-      });
-      if (response.ok) {
-        const data = await response.json();
+    if (token) {
+      try {
+        const response = await fetch(`${host}/api/workout/all`, {
+          method: "GET",
+          headers: { Authorization: `${token}` },
+        });
+        if (response.ok) {
+          const data = await response.json();
 
-        setWorkoutEntries(data.result);
-      } else {
-        console.error(
-          "Error fetching workout entries:",
-          response.status,
-          response.statusText
-        );
+          setWorkoutEntries(data.result);
+        } else {
+          console.error(
+            "Error fetching workout entries:",
+            response.status,
+            response.statusText
+          );
+        }
+      } catch (error) {
+        console.error("Error fetching workout entries:", error);
       }
-    } catch (error) {
-      console.error("Error fetching workout entries:", error);
     }
   };
 

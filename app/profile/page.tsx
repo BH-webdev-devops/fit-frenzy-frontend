@@ -105,6 +105,8 @@ export default function Profile() {
       const result = await addProfile(profileForm);
 
       if (result.success) {
+        setUserForm(user);
+        setRandomQuote(randomQuote);
         router.push("/profile");
       } else {
         alert(result.message);

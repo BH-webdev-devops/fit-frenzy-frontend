@@ -2,7 +2,8 @@
 "use client";
 
 import React, { createContext, useContext, useEffect, useState } from "react";
-//import { jwtDecode } from "jwt-decode";
+import { useRouter } from "next/navigation";
+import { jwtDecode } from "jwt-decode";
 
 interface AuthContextType {
   user: any;
@@ -19,7 +20,11 @@ interface AuthContextType {
   updateProfile: (formData: object) => void;
   setLoading: (loading: boolean) => void;
   setIsAuth: (isAuth: boolean) => void;
-  forgotPassword: (email: string, birthdate: string, newPassword: string) => Promise<void>;
+  forgotPassword: (
+    email: string,
+    birthdate: string,
+    newPassword: string
+  ) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -34,12 +39,25 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [quotes, setQuotes] = useState();
 
   const host = process.env.NEXT_PUBLIC_API_URL;
+  const router = useRouter();
 
-  //const isTokenExpired = (token: string): boolean => {
-  //  const decoded: any = jwtDecode(token);
-  //  const currentTime = Math.floor(Date.now() / 1000);
-  //  return decoded.exp < currentTime;
-  //};
+  const isTokenExpired = (token: string | null): boolean => {
+    if (!token) return true;
+    try {
+      const decoded: any = jwtDecode(token);
+      const currentTime = Math.floor(Date.now() / 1000);
+      return decoded.exp < currentTime;
+    } catch (error) {
+      return true;
+    }
+  };
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (isTokenExpired(token)) {
+      logout();
+    }
+  }, []);
 
   const fetchQuotes = async () => {
     const token = localStorage.getItem("token");
@@ -228,13 +246,18 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setIsAuth(false);
     setProfileExists(false);
     setIsLoggedIn(false);
+    router.push("/login");
   };
 
-  const forgotPassword = async (email: string, birthdate: string, newPassword: string) => {
+  const forgotPassword = async (
+    email: string,
+    birthdate: string,
+    newPassword: string
+  ) => {
     const res = await fetch("http://localhost:3000/api/forgot-password", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, birthdate, newPassword })
+      body: JSON.stringify({ email, birthdate, newPassword }),
     });
     const data = await res.json();
     if (data.token) {
@@ -242,7 +265,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setUser(data.user);
     }
     return data;
-  }
+  };
 
   return (
     <AuthContext.Provider
@@ -261,7 +284,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         setIsAuth,
         isLoggedIn,
         forgotPassword,
-        quotes
+        quotes,
       }}
     >
       {children}
