@@ -2,7 +2,6 @@
 import React, { useState, useEffect } from 'react';
 import { Line } from 'react-chartjs-2';
 import { Pie } from 'react-chartjs-2';
-import { useRouter } from 'next/navigation';
 import { useAuth } from "../context/AuthContext";
 import {
     Chart,
@@ -55,17 +54,10 @@ export default function Progress() {
     const [workoutEntries, setWorkoutEntries] = useState<WorkoutEntry[]>([]);
     const [showPieChart, setShowPieChart] = useState(true);
     const [showLineChart, setShowLineChart] = useState(true);
-    const router = useRouter();
 
     useEffect(() => {
-        const token = localStorage.getItem('token') || '';
-        if (!token || !isAuth) {
-            router.push('/login');
-        } else {
-            console.log('token:', token);
-            fetchWeightEntries();
-            fetchWorkoutEntries();
-        }
+        fetchWeightEntries();
+        fetchWorkoutEntries();
     }, [isAuth]);
 
 

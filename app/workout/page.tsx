@@ -327,7 +327,7 @@ export default function Workout() {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const validateText = (input: any) => {
-        const pattern = /^[a-zA-Z0-9 !_-]+$/;
+        const pattern = /^[a-zA-Z0-9 !_,-]+$/;
         return pattern.test(input);
     };
 
@@ -364,7 +364,7 @@ export default function Workout() {
 
         if (!sanitizedNewWorkout.duration && !sanitizedEditWorkout?.duration) {
             errors.duration = 'Duration is required';
-        } else if ((sanitizedNewWorkout.duration ?? 0) <= 0 || (sanitizedEditWorkout?.duration ?? 0) <= 0) {
+        } else if ((parseInt(sanitizedNewWorkout.duration?.toString() || '0') <= 0) || (parseInt(sanitizedEditWorkout?.duration?.toString() || '0') <= 0)) {
             errors.duration = 'Duration must be a positive number';
         }
 
