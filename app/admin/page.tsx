@@ -41,7 +41,7 @@ export default function Admin() {
         const token = localStorage.getItem("token");
         if (token && isAdmin) {
             try {
-                const response = await fetch(`http://localhost:3000/api/admin/users/${deleteId}`, {
+                const response = await fetch(`${host}/api/admin/users/${deleteId}`, {
                     method: "DELETE",
                     headers: { Authorization: `${token}` },
                 });
@@ -67,7 +67,7 @@ export default function Admin() {
         const token = localStorage.getItem("token");
         if (token && isAdmin) {
             try {
-                const response = await fetch(`http://localhost:3000/api/admin/users/${id}`, {
+                const response = await fetch(`${host}/api/admin/users/${id}`, {
                     method: "GET",
                     headers: { Authorization: `${token}` },
                 });
@@ -93,7 +93,7 @@ export default function Admin() {
         const token = localStorage.getItem("token");
         if (token && isAdmin) {
             try {
-                const response = await fetch(`http://localhost:3000/api/admin/users`, {
+                const response = await fetch(`${host}/api/admin/users`, {
                     method: "GET",
                     headers: { Authorization: `${token}` },
                 });

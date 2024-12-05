@@ -66,7 +66,7 @@ export default function Progress() {
     const fetchWeightEntries = async () => {
         const token = localStorage.getItem("token");
         try {
-            const response = await fetch(`http://localhost:3000/api/profile/weight`, {
+            const response = await fetch(`${host}/api/profile/weight`, {
                 method: "GET",
                 headers: { Authorization: `${token}` },
             });
@@ -89,7 +89,7 @@ export default function Progress() {
     const fetchWorkoutEntries = async () => {
         const token = localStorage.getItem("token");
         try {
-            const response = await fetch(`http://localhost:3000/api/workout/all`, {
+            const response = await fetch(`${host}/api/workout/all`, {
                 method: "GET",
                 headers: { Authorization: `${token}` },
             });

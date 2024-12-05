@@ -49,7 +49,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     if (token) {
       try {
-        const res = await fetch(`http://localhost:3000/api/quotes`, {
+        const res = await fetch(`${host}/api/quotes`, {
           method: "GET",
           headers: { Authorization: `${token}` },
         });
@@ -84,7 +84,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     if (token && !isTokenExpired(token)) {
       try {
-        const res = await fetch(`http://localhost:3000/api/profile`, {
+        const res = await fetch(`${host}/api/profile`, {
           method: "GET",
           headers: { Authorization: `${token}` },
         });
@@ -123,7 +123,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const token = localStorage.getItem("token");
 
     try {
-      const res = await fetch(`http://localhost:3000/api/profile`, {
+      const res = await fetch(`${host}/api/profile`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -169,7 +169,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
 
     try {
-      const res = await fetch(`http://localhost:3000/api/profile`, {
+      const res = await fetch(`${host}/api/profile`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -198,7 +198,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const register = async (name: string, email: string, password: string) => {
-    const res = await fetch(`http://localhost:3000/api/register`, {
+    const res = await fetch(`${host}/api/register`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name, email, password }),
@@ -213,7 +213,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const login = async (email: string, password: string) => {
-    const res = await fetch(`http://localhost:3000/api/login`, {
+    const res = await fetch(`${host}/api/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
@@ -240,7 +240,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const forgotPassword = async (email: string, birthdate: string, newPassword: string) => {
-    const res = await fetch("http://localhost:3000/api/forgot-password", {
+    const res = await fetch("${host}/api/forgot-password", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, birthdate, newPassword })
