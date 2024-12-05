@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { useRouter } from "next/navigation";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { FaEdit, FaTrash, FaEye, FaArrowLeft } from 'react-icons/fa';

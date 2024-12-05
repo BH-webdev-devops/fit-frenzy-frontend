@@ -64,6 +64,11 @@ export default function Navbar() {
                     {item.name}
                   </a>
                 ))}
+                {isAdmin ? (
+                  <a href="/admin" className="text-lg font-semibold text-gray-900">
+                    Admin
+                  </a>
+                ) : null}
               </div>
               <button
                 onClick={handleLogout}
