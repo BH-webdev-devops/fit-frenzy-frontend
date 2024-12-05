@@ -1,7 +1,9 @@
 "use client";
-import React, { useState, useEffect } from "react";
-import { Line } from "react-chartjs-2";
-import { Pie } from "react-chartjs-2";
+import React, { useState, useEffect } from 'react';
+import { Line } from 'react-chartjs-2';
+import { Pie } from 'react-chartjs-2';
+import { useRouter } from 'next/navigation';
+import { useAuth } from "../context/AuthContext";
 import {
   Chart,
   ArcElement,
@@ -47,10 +49,24 @@ interface WorkoutEntry {
 }
 
 export default function Progress() {
-  const [weightEntries, setWeightEntries] = useState<WeightEntry[]>([]);
-  const [workoutEntries, setWorkoutEntries] = useState<WorkoutEntry[]>([]);
-  const [showPieChart, setShowPieChart] = useState(true);
-  const [showLineChart, setShowLineChart] = useState(true);
+    const { user, isAuth, loading, isLoggedIn }: any = useAuth();
+    const [weightEntries, setWeightEntries] = useState<WeightEntry[]>([]);
+    const [workoutEntries, setWorkoutEntries] = useState<WorkoutEntry[]>([]);
+    const [showPieChart, setShowPieChart] = useState(true);
+    const [showLineChart, setShowLineChart] = useState(true);
+    const router = useRouter();
+
+    useEffect(() => {
+        const token = localStorage.getItem('token') || '';
+        if (!token || !isAuth) {
+            router.push('/login');
+        } else {
+            console.log('token:', token);
+            fetchWeightEntries();
+            fetchWorkoutEntries();
+        }
+    }, [isAuth]);
+
 
   const host = process.env.NEXT_PUBLIC_API_URL;
 
@@ -76,10 +92,6 @@ export default function Progress() {
     }
   };
 
-  useEffect(() => {
-    fetchWeightEntries();
-    fetchWorkoutEntries();
-  }, []);
 
   const fetchWorkoutEntries = async () => {
     const token = localStorage.getItem("token");
@@ -175,29 +187,29 @@ export default function Progress() {
 
   return (
     <div className="container mx-auto p-4">
-      <button onClick={() => setShowPieChart(!showPieChart)}>
-        {showPieChart ? "▼ Hide Weight Tracker" : "► Show Weight Tracker"}
-      </button>
-      {showPieChart && (
-        <div>
-          <h2 className="title">Weight Progress</h2>
-          <div className="chart-container bg-gray mb-4 ">
-            <Line data={chartData} />
-          </div>
-        </div>
-      )}
+            <button onClick={() => setShowPieChart(!showPieChart)}>
+                {showPieChart ? '▼ Hide Weight Tracker' : '► Show Weight Tracker'}
+            </button>
+            {showPieChart && (
+                <div>
+                    <h2 className="title">Weight Progress</h2>
+                    <div className="chart-container bg-gray mb-4 ">
+                        <Line data={chartData} />
+                    </div>
+                </div>
+            )}
 
-      <button onClick={() => setShowLineChart(!showLineChart)}>
-        {showLineChart ? "▼ Hide Workout Progress" : "► Show Workout Progress"}
-      </button>
-      {showLineChart && (
-        <div>
-          <h2 className="title">Workout Progress</h2>
-          <div className="chart-container bg-gray">
-            <Pie data={pieData} />
-          </div>
+            <button onClick={() => setShowLineChart(!showLineChart)}>
+                {showLineChart ? '▼ Hide Workout Progress' : '► Show Workout Progress'}
+            </button>
+            {showLineChart && (
+                <div>
+                    <h2 className="title">Workout Progress</h2>
+                    <div className="chart-container bg-gray">
+                        <Pie data={pieData} />
+                    </div>
+                </div>
+            )}
         </div>
-      )}
-    </div>
-  );
-}
+    );
+  }
