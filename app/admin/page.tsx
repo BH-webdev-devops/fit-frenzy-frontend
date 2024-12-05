@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useRouter } from "next/navigation";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { FaEdit, FaTrash, FaEye, FaArrowLeft } from 'react-icons/fa';
 
 interface User {
@@ -22,13 +23,14 @@ interface Profile {
 };
 
 export default function Admin() {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { isAuth, isAdmin }: any = useAuth();
     const [users, setUsers] = useState<User[]>([]);
     const [user, setUser] = useState<Profile | null>(null);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { getAllUsers, getUserById, deleteUser }: any = useAuth();
-    const router = useRouter();
+    // const { getAllUsers, getUserById, deleteUser }: any = useAuth();
+    // const router = useRouter();
 
     useEffect(() => {
         if (isAuth && isAdmin) {
