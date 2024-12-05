@@ -22,7 +22,7 @@ export default function Home() {
         </p>
         <a
           href="/register"
-          className="px-6 py-3 bg-neutral-500 text-white text-lg rounded-full shadow-lg hover:bg-neutral-600 transition duration-300"
+          className="px-6 py-3 bg-blue-500 text-white text-lg rounded-full shadow-lg hover:bg-neutral-600 transition duration-300"
         >
           Join Our Community
         </a>

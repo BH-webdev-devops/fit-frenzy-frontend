@@ -27,7 +27,7 @@ const Login = () => {
         alert(response.message);
       }
     } catch (err) {
-      console.log(err);
+      console.error(err);
     }
   };
 
@@ -164,6 +164,7 @@ const Login = () => {
                 </label>
                 <input
                   type="email"
+                  placeholder="Email"
                   id="forgotEmail"
                   value={forgotEmail}
                   onChange={(e) => setForgotEmail(e.target.value)}
@@ -196,6 +197,7 @@ const Login = () => {
                 </label>
                 <input
                   type="password"
+                  placeholder="Password"
                   id="newPassword"
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
@@ -207,7 +209,7 @@ const Login = () => {
               <div>
                 <button
                   type="submit"
-                  className="flex w-full justify-center rounded-md bg-neutral-400 px-4 py-3 text-lg font-semibold text-black shadow-sm hover:bg-neutral-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-400"
+                  className="flex w-full justify-center rounded-md bg-blue-500 px-4 py-3 text-lg font-semibold text-black shadow-sm hover:bg-neutral-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-400"
                 >
                   Update Password
                 </button>

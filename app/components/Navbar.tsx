@@ -29,25 +29,14 @@ export default function Navbar() {
     <header className="bg-white">
       <nav
         aria-label="Global"
-        className="mx-auto flex max-w-7xl items-center justify-between gap-x-6 p-6 lg:px-8"
+        className="flex max-w-7xl items-center justify-between gap-x-6 "
       >
-        <div className="flex lg:flex-1">
+        <div className="flex">
           <Link href="/" className="m-1.5 p-1.5">
-            <img alt="FitFrenzy Logo" src="/2.png" className="w-32 h-24" />
+            <img alt="FitFrenzy Logo" src="/F.png" className="w-32 h-28" />
           </Link>
         </div>
-        <div className="hidden lg:flex lg:gap-x-12">
-          {navigation.map((item) => (
-            <a
-              key={item.name}
-              href={item.href}
-              className="text-lg font-semibold text-gray-900"
-            >
-              {item.name}
-            </a>
-          ))}
-        </div>
-        <div className="flex flex-1 items-center justify-end gap-x-6">
+        <div className="flex items-center justify-end gap-x-6">
           {!isLoggedIn ? (
             <>
               <a
@@ -64,14 +53,28 @@ export default function Navbar() {
               </a>
             </>
           ) : (
-            <button
-              onClick={handleLogout}
-              className="rounded-md bg-neutral-800 px-4 py-2 text-lg font-semibold text-white shadow-sm hover:bg-neutral-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-600"
-            >
-              Logout
-            </button>
+            <>
+              <div className="hidden lg:flex lg:gap-x-12">
+                {navigation.map((item) => (
+                  <a
+                    key={item.name}
+                    href={item.href}
+                    className="text-lg font-semibold text-gray-900"
+                  >
+                    {item.name}
+                  </a>
+                ))}
+              </div>
+              <button
+                onClick={handleLogout}
+                className="rounded-md bg-neutral-800 px-4 py-2 text-lg font-semibold text-white shadow-sm hover:bg-neutral-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-600"
+              >
+                Logout
+              </button>
+            </>
           )}
         </div>
+
         <div className="flex lg:hidden">
           <button
             type="button"
@@ -93,7 +96,7 @@ export default function Navbar() {
           <div className="flex items-center gap-x-6">
             <Link href="/" className="-m-1.5 p-1.5">
               <span className="sr-only">FitFrenzy</span>
-              <img alt="FitFrenzy Logo" src="/2.png" className="w-20 h-18" />
+              <img alt="FitFrenzy Logo" src="/F.png" className="w-20 h-18" />
             </Link>
             {!isLoggedIn ? (
               <a
@@ -114,17 +117,6 @@ export default function Navbar() {
           </div>
           <div className="mt-6 flow-root">
             <div className="-my-6 divide-y divide-gray-800/10">
-              <div className="space-y-2 py-6">
-                {navigation.map((item) => (
-                  <a
-                    key={item.name}
-                    href={item.href}
-                    className="-mx-3 block rounded-lg px-3 py-2 text-lg font-semibold text-gray-900 hover:bg-gray-50"
-                  >
-                    {item.name}
-                  </a>
-                ))}
-              </div>
               <div className="py-6">
                 {!isLoggedIn ? (
                   <a
@@ -134,12 +126,25 @@ export default function Navbar() {
                     Log in
                   </a>
                 ) : (
-                  <button
-                    onClick={handleLogout}
-                    className="-mx-3 block rounded-lg px-3 py-2.5 text-lg font-semibold text-gray-900 hover:bg-gray-50"
-                  >
-                    Logout
-                  </button>
+                  <>
+                    <div className="space-y-2 py-6">
+                      {navigation.map((item) => (
+                        <a
+                          key={item.name}
+                          href={item.href}
+                          className="-mx-3 block rounded-lg px-3 py-2 text-lg font-semibold text-gray-900 hover:bg-gray-50"
+                        >
+                          {item.name}
+                        </a>
+                      ))}
+                    </div>
+                    <button
+                      onClick={handleLogout}
+                      className="-mx-3 block rounded-lg px-3 py-2.5 text-lg font-semibold text-gray-900 hover:bg-gray-50"
+                    >
+                      Logout
+                    </button>
+                  </>
                 )}
               </div>
             </div>

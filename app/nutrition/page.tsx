@@ -22,7 +22,6 @@ export default function RecipeSearch() {
 
   const edamamKey = process.env.NEXT_PUBLIC_EDAMAM_API_KEY;
   const edamamID = process.env.NEXT_PUBLIC_EDAMAM_API_ID;
-  console.log(edamamID, edamamKey);
   const EDAMAM_API_URL = "https://api.edamam.com/api/recipes/v2";
 
   const [recipes, setRecipes] = useState([]);
@@ -34,8 +33,7 @@ export default function RecipeSearch() {
   const fetchRecipes = useCallback(
     async (query: string) => {
       const token = localStorage.getItem("token");
-      console.log(isLoggedIn);
-      if (token && isLoggedIn) {
+      if (token) {
         setLoadingState(true);
         try {
           const res = await fetch(
