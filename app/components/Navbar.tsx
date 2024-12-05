@@ -32,7 +32,7 @@ export default function Navbar() {
         className="flex max-w-7xl items-center justify-between gap-x-6 "
       >
         <div className="flex">
-          <Link href="/" className="m-1.5 p-1.5">
+          <Link href="/" className="m-1.5 p-1.5 ml-12">
             <img alt="FitFrenzy Logo" src="/F.png" className="w-32 h-28" />
           </Link>
         </div>
@@ -54,7 +54,7 @@ export default function Navbar() {
             </>
           ) : (
             <>
-              <div className="hidden lg:flex lg:gap-x-12">
+              <div className="hidden lg:flex lg:gap-x-12 justify-end">
                 {navigation.map((item) => (
                   <a
                     key={item.name}
