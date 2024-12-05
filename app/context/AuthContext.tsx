@@ -48,6 +48,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       const currentTime = Math.floor(Date.now() / 1000);
       return decoded.exp < currentTime;
     } catch (error) {
+      console.error(error);
       return true;
     }
   };
