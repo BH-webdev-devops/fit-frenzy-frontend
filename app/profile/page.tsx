@@ -2,6 +2,14 @@
 import { useAuth } from "../context/AuthContext";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import {
+  FaTransgenderAlt,
+  FaBirthdayCake,
+  FaWeightHanging,
+  FaRuler,
+  FaMapMarkerAlt,
+  FaRegUserCircle,
+} from "react-icons/fa";
 
 const formatDate = (dateString: string) => {
   const date = new Date(dateString);
@@ -10,7 +18,6 @@ const formatDate = (dateString: string) => {
   const day = String(date.getDate()).padStart(2, "0");
   return `${year}-${month}-${day}`;
 };
-
 export default function Profile() {
   const {
     user,
@@ -26,6 +33,8 @@ export default function Profile() {
   any = useAuth();
   const router = useRouter();
 
+  const [randomQuote, setRandomQuote] = useState("Keep pushing forward!");
+
   const [profileForm, setProfileForm] = useState({
     gender: "",
     age: "",
@@ -35,8 +44,6 @@ export default function Profile() {
     location: "",
     birthday: "",
   });
-
-  console.log(quotes);
 
   const [userForm, setUserForm] = useState({
     name: "",
@@ -67,6 +74,13 @@ export default function Profile() {
       });
     }
   }, [profile, user]);
+
+  useEffect(() => {
+    if (quotes && quotes.length > 0) {
+      const randomIndex = Math.floor(Math.random() * quotes.length);
+      setRandomQuote(quotes[randomIndex]?.name || "Keep pushing forward!");
+    }
+  }, [quotes]);
 
   useEffect(() => {
     if (!loading && !isLoggedIn) {
@@ -133,53 +147,38 @@ export default function Profile() {
       ) : (
         <div className="my-16">
           <h1 className="text-3xl font-bold mb-6">Welcome, {user?.name}</h1>
+          {quotes && (
+            <div className="mt-16 p-6 rounded-lg shadow-lg w-full max-w-md mx-auto text-lg bg-neutral-600">
+              <h1 className="text-2xl">{randomQuote}</h1>
+            </div>
+          )}
 
           {profileExists ? (
             <div className="mt-6 sm:mx-auto sm:w-full sm:max-w-sm text-black">
-              <div className="flex ">
-                <button
-                  onClick={() => router.push("/workout")}
-                  className="mt-4 bg-neutral-500 py-3 px-6 rounded-md font-semibold hover:bg-neutral-500 transition mx-6"
-                >
-                  My Workouts
-                </button>
-
-                <button
-                  onClick={() => router.push("/nutrition")}
-                  className="mt-4 bg-neutral-500 py-3 px-6 rounded-md font-semibold hover:bg-neutral-500 transition mx-6"
-                >
-                  My Recipes
-                </button>
-              </div>
               {isEditing ? (
                 <form onSubmit={handleUpdate} className="space-y-6 mt-16">
                   <h1 className="text-2xl font-semibold text-gray-300 mb-4">
                     Update Your Profile
                   </h1>
 
-                  <div>
-                    <input
-                      type="text"
-                      placeholder="Name"
-                      value={userForm.name}
-                      onChange={(e) =>
-                        setUserForm({ ...userForm, name: e.target.value })
-                      }
-                      className="w-full p-4 border border-gray-300 rounded-lg mb-1 focus:outline-none focus:ring focus:ring-blue-300"
-                    />
-                  </div>
-
-                  <div>
-                    <input
-                      type="email"
-                      placeholder="Email"
-                      value={userForm.email}
-                      onChange={(e) =>
-                        setUserForm({ ...userForm, email: e.target.value })
-                      }
-                      className="w-full p-4 border border-gray-300 rounded-lg mb-1 focus:outline-none focus:ring focus:ring-blue-300"
-                    />
-                  </div>
+                  <input
+                    type="text"
+                    placeholder="Name"
+                    value={userForm.name}
+                    onChange={(e) =>
+                      setUserForm({ ...userForm, name: e.target.value })
+                    }
+                    className="w-full p-4 border border-gray-300 rounded-lg mb-1 focus:outline-none focus:ring focus:ring-blue-300"
+                  />
+                  <input
+                    type="email"
+                    placeholder="Email"
+                    value={userForm.email}
+                    onChange={(e) =>
+                      setUserForm({ ...userForm, email: e.target.value })
+                    }
+                    className="w-full p-4 border border-gray-300 rounded-lg mb-1 focus:outline-none focus:ring focus:ring-blue-300"
+                  />
 
                   <input
                     type="password"
@@ -209,47 +208,41 @@ export default function Profile() {
                     <option value="Male">Male</option>
                     <option value="Other">Other</option>
                   </select>
-                  <div>
-                    <input
-                      type="number"
-                      placeholder="Age"
-                      value={profileForm.age}
-                      onChange={(e) =>
-                        setProfileForm({ ...profileForm, age: e.target.value })
-                      }
-                      className="w-full p-4 border border-gray-300 rounded-lg mb-1 focus:outline-none focus:ring focus:ring-blue-300"
-                    />
-                  </div>
 
-                  <div>
-                    <input
-                      type="number"
-                      placeholder="Weight"
-                      value={profileForm.weight}
-                      onChange={(e) =>
-                        setProfileForm({
-                          ...profileForm,
-                          weight: e.target.value,
-                        })
-                      }
-                      className="w-full p-4 border border-gray-300 rounded-lg mb-1 focus:outline-none focus:ring focus:ring-blue-300"
-                    />
-                  </div>
+                  <input
+                    type="number"
+                    placeholder="Age"
+                    value={profileForm.age}
+                    onChange={(e) =>
+                      setProfileForm({ ...profileForm, age: e.target.value })
+                    }
+                    className="w-full p-4 border border-gray-300 rounded-lg mb-1 focus:outline-none focus:ring focus:ring-blue-300"
+                  />
 
-                  <div>
-                    <input
-                      type="number"
-                      placeholder="Height"
-                      value={profileForm.height}
-                      onChange={(e) =>
-                        setProfileForm({
-                          ...profileForm,
-                          height: e.target.value,
-                        })
-                      }
-                      className="w-full p-4 border border-gray-300 rounded-lg mb-1 focus:outline-none focus:ring focus:ring-blue-300"
-                    />
-                  </div>
+                  <input
+                    type="number"
+                    placeholder="Weight"
+                    value={profileForm.weight}
+                    onChange={(e) =>
+                      setProfileForm({
+                        ...profileForm,
+                        weight: e.target.value,
+                      })
+                    }
+                    className="w-full p-4 border border-gray-300 rounded-lg mb-1 focus:outline-none focus:ring focus:ring-blue-300"
+                  />
+                  <input
+                    type="number"
+                    placeholder="Height"
+                    value={profileForm.height}
+                    onChange={(e) =>
+                      setProfileForm({
+                        ...profileForm,
+                        height: e.target.value,
+                      })
+                    }
+                    className="w-full p-4 border border-gray-300 rounded-lg mb-1 focus:outline-none focus:ring focus:ring-blue-300"
+                  />
                   <textarea
                     placeholder="Bio"
                     value={profileForm.bio}
@@ -285,63 +278,80 @@ export default function Profile() {
                   <div className="flex justify-between">
                     <button
                       type="submit"
-                      className="w-full bg-neutral-400 text-black py-3 px-6 rounded-md font-semibold hover:bg-neutral-500 transition"
+                      className="w-full bg-blue-500 py-3 px-6 rounded-md font-semibold hover:bg-neutral-500 transition"
                     >
                       Update Profile
                     </button>
                     <button
                       type="button"
                       onClick={handleCancel}
-                      className="w-full bg-red-400 text-black py-3 px-6 rounded-md font-semibold hover:bg-red-500 transition ml-4"
+                      className="w-full bg-red-400 py-3 px-6 rounded-md font-semibold hover:bg-red-500 transition ml-4"
                     >
                       Cancel
                     </button>
                   </div>
                 </form>
               ) : (
-                <div className="mt-16 p-6 rounded-lg shadow-lg w-full max-w-md mx-auto text-lg bg-neutral-600">
+                <div className="mt-16 p-6 rounded-lg shadow-lg min-w-[360px] w-full max-w-md mx-auto text-lg bg-neutral-600">
                   <h2 className="text-2xl font-semibold text-white mb-4">
                     Profile Information
                   </h2>
                   <div className="grid grid-cols-2 gap-y-4 text-left">
-                    <div className="text-gray-200 font-medium">Gender:</div>
+                    <div className="text-gray-200 font-medium flex items-center">
+                      <FaTransgenderAlt className="mr-2 text-blue-500" />{" "}
+                      Gender:
+                    </div>
                     <div className="text-white">
                       {profile.gender || "Not specified"}
                     </div>
 
-                    <div className="text-gray-200 font-medium">Age:</div>
+                    <div className="text-gray-200 font-medium flex items-center">
+                      <FaRegUserCircle className="mr-2 text-blue-500" /> Age:
+                    </div>
                     <div className="text-white">
                       {profile.age || "Not specified"}
                     </div>
 
-                    <div className="text-gray-200 font-medium">Weight:</div>
+                    <div className="text-gray-200 font-medium flex items-center">
+                      <FaWeightHanging className="mr-2 text-blue-500" /> Weight:
+                    </div>
                     <div className="text-white">
                       {profile.weight || "Not specified"}
                     </div>
 
-                    <div className="text-gray-200 font-medium">Height:</div>
+                    <div className="text-gray-200 font-medium flex items-center">
+                      <FaRuler className="mr-2 text-blue-500" /> Height:
+                    </div>
                     <div className="text-white">
                       {profile.height || "Not specified"}
                     </div>
 
-                    <div className="text-gray-200 font-medium">Bio:</div>
+                    <div className="text-gray-200 font-medium flex items-center">
+                      <FaRegUserCircle className="mr-2 text-blue-500" /> Bio:
+                    </div>
                     <div className="text-white">
                       {profile.bio || "Not specified"}
                     </div>
 
-                    <div className="text-gray-200 font-medium">Location:</div>
+                    <div className="text-gray-200 font-medium flex items-center">
+                      <FaMapMarkerAlt className="mr-2 text-blue-500" />{" "}
+                      Location:
+                    </div>
                     <div className="text-white">
                       {profile.location || "Not specified"}
                     </div>
 
-                    <div className="text-gray-200 font-medium">Birthday:</div>
+                    <div className="text-gray-200 font-medium flex items-center">
+                      <FaBirthdayCake className="mr-2 text-blue-500" />{" "}
+                      Birthday:
+                    </div>
                     <div className="text-white">
                       {profile.birthday || "Not specified"}
                     </div>
                   </div>
                   <button
                     onClick={() => setIsEditing(true)}
-                    className="mt-6 w-full bg-neutral-500 text-white py-3 px-6 rounded-md font-semibold transition"
+                    className="mt-6 w-full bg-blue-500 text-white py-3 px-6 rounded-md font-semibold transition"
                   >
                     Edit Profile
                   </button>
@@ -368,7 +378,7 @@ export default function Profile() {
                 </select>
                 <input
                   type="number"
-                  placeholder="Age"
+                  placeholder="Age*"
                   value={profileForm.age}
                   onChange={(e) =>
                     setProfileForm({ ...profileForm, age: e.target.value })
@@ -378,7 +388,7 @@ export default function Profile() {
 
                 <input
                   type="number"
-                  placeholder="Weight"
+                  placeholder="Weight*"
                   value={profileForm.weight}
                   onChange={(e) =>
                     setProfileForm({ ...profileForm, weight: e.target.value })
@@ -388,7 +398,7 @@ export default function Profile() {
 
                 <input
                   type="number"
-                  placeholder="Height"
+                  placeholder="Height*"
                   value={profileForm.height}
                   onChange={(e) =>
                     setProfileForm({ ...profileForm, height: e.target.value })
@@ -426,7 +436,7 @@ export default function Profile() {
 
                 <button
                   type="submit"
-                  className="w-full bg-neutral-400 text-black py-3 px-6 rounded-md font-semibold hover:bg-neutral-500 transition"
+                  className="w-full bg-blue-500 py-3 px-6 rounded-md font-semibold hover:bg-neutral-500 transition"
                 >
                   Create Profile
                 </button>

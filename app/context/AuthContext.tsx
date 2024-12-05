@@ -57,11 +57,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           console.error("Error fetching quotes:", res.status, res.statusText);
         }
       } catch (err) {
-        console.log(err);
         console.error(`Error fetching quotes: ${err}`);
       }
     } else {
-      console.error("No token found");
+      return;
     }
   };
 
@@ -77,8 +76,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const fetchProfile = async () => {
     const token = localStorage.getItem("token");
-
-    if (token && !isTokenExpired(token)) {
+    if (token) {
       try {
         const res = await fetch(`${host}/api/profile`, {
           method: "GET",
@@ -87,7 +85,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
         if (res.ok) {
           const data = await res.json();
-          console.log(data);
 
           setUser(data.user);
           setIsAuth(true);
