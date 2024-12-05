@@ -13,6 +13,7 @@ interface AuthContextType {
   profileExists: boolean;
   isLoggedIn: boolean;
   quotes: any;
+  isAdmin: boolean;
   login: (email: string, password: string) => Promise<void>;
   register: (name: string, email: string, password: string) => Promise<void>;
   logout: () => void;
@@ -20,11 +21,8 @@ interface AuthContextType {
   updateProfile: (formData: object) => void;
   setLoading: (loading: boolean) => void;
   setIsAuth: (isAuth: boolean) => void;
-  forgotPassword: (
-    email: string,
-    birthdate: string,
-    newPassword: string
-  ) => Promise<void>;
+  forgotPassword: (email: string, birthdate: string, newPassword: string) => Promise<void>;
+  setAdmin: (isAdmin: boolean) => void;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -37,6 +35,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [profile, setProfile] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [quotes, setQuotes] = useState();
+  const [isAdmin, setAdmin] = useState(false);
 
   const host = process.env.NEXT_PUBLIC_API_URL;
   const router = useRouter();
@@ -110,6 +109,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           setIsAuth(true);
           setProfile(data.result);
           setProfileExists(!!data.result);
+          setAdmin(data.user.admin);
         } else if (res.status === 404) {
           setIsAuth(false);
           setProfileExists(false);
@@ -236,6 +236,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setUser(data.user);
       setIsLoggedIn(true);
       setIsAuth(true);
+      console.log("admin data---------", data.user.admin);
+      setAdmin(data.user.admin);
       await fetchProfile();
     }
     return data;
@@ -250,12 +252,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     router.push("/login");
   };
 
-  const forgotPassword = async (
-    email: string,
-    birthdate: string,
-    newPassword: string
-  ) => {
-    const res = await fetch("http://localhost:3000/api/forgot-password", {
+  const forgotPassword = async (email: string, birthdate: string, newPassword: string) => {
+    const res = await fetch("${host}/api/forgot-password", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, birthdate, newPassword }),
@@ -286,6 +284,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         isLoggedIn,
         forgotPassword,
         quotes,
+        isAdmin,
+        setAdmin
       }}
     >
       {children}
