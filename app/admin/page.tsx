@@ -22,6 +22,8 @@ interface Profile {
     birthday: "",
 };
 
+const host = process.env.NEXT_PUBLIC_API_URL;
+
 export default function Admin() {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { isAuth, isAdmin }: any = useAuth();
