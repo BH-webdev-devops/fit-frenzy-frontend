@@ -254,7 +254,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     birthdate: string,
     newPassword: string
   ) => {
-    const res = await fetch("${host}/api/forgot-password", {
+    const res = await fetch(`${host}/api/forgot-password`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, birthdate, newPassword }),

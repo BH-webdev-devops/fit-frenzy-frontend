@@ -457,13 +457,13 @@ export default function Profile() {
                     <div className="text-gray-200 font-medium flex items-center">
                       <FaUser className="mr-2 text-blue-500" /> Name:
                     </div>
-                    <div className="text-white">
+                    <div className="text-white break-words">
                       {user.name || "Not specified"}
                     </div>
                     <div className="text-gray-200 font-medium flex items-center">
                       <FaEnvelope className="mr-2 text-blue-500" /> Email:
                     </div>
-                    <div className="text-white">
+                    <div className="text-white break-words">
                       {user.email || "Not specified"}
                     </div>
                     <div className="text-gray-200 font-medium flex items-center">
@@ -473,35 +473,30 @@ export default function Profile() {
                     <div className="text-white">
                       {profile.gender || "Not specified"}
                     </div>
-
                     <div className="text-gray-200 font-medium flex items-center">
                       <FaRegUserCircle className="mr-2 text-blue-500" /> Age:
                     </div>
                     <div className="text-white">
                       {profile.age || "Not specified"}
                     </div>
-
                     <div className="text-gray-200 font-medium flex items-center">
                       <FaWeightHanging className="mr-2 text-blue-500" /> Weight:
                     </div>
                     <div className="text-white">
                       {profile.weight || "Not specified"}
                     </div>
-
                     <div className="text-gray-200 font-medium flex items-center">
                       <FaRuler className="mr-2 text-blue-500" /> Height:
                     </div>
                     <div className="text-white">
                       {profile.height || "Not specified"}
                     </div>
-
                     <div className="text-gray-200 font-medium flex items-center">
                       <FaRegUserCircle className="mr-2 text-blue-500" /> Bio:
                     </div>
-                    <div className="text-white">
+                    <div className="text-white break-words">
                       {profile.bio || "Not specified"}
                     </div>
-
                     <div className="text-gray-200 font-medium flex items-center">
                       <FaMapMarkerAlt className="mr-2 text-blue-500" />{" "}
                       Location:
@@ -509,7 +504,6 @@ export default function Profile() {
                     <div className="text-white">
                       {profile.location || "Not specified"}
                     </div>
-
                     <div className="text-gray-200 font-medium flex items-center">
                       <FaBirthdayCake className="mr-2 text-blue-500" />{" "}
                       Birthday:

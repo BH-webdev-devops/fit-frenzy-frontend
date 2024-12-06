@@ -22,7 +22,10 @@ const Login = () => {
       const response = await login(email, password);
       if (response.message === "Login successful") {
         router.push("/profile");
-      } else if (response.message === "Invalid credentials") {
+      } else if (
+        response.message === "Invalid credentials" ||
+        response.message === "User does not exist"
+      ) {
         alert(response.message);
       }
     } catch (err) {
