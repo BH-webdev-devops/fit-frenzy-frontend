@@ -2,6 +2,8 @@
 
 **FitFrenzy, a fitness track application, is a frontend application designed to manage user authentication, profiles, quotes, and workouts. This application is built with Next.js and TypeScript, and it uses Docker for containerization and Google Cloud Run for deployment.**
 
+![FitFrenzy](./public/frontend.png)
+
 ## Table of Contents
 - [Installation](#installation)
 - [Usage](#usage)
@@ -38,7 +40,15 @@
 
 - Search Fitness exercise Videos
   - Users can search for fitness exercise videos to find instructional content and workout routines.
-  
+  - Recommendation of videos based on titles
+
+- Admin role
+    - Only users with admin role has access to view all the users and their profile. If required, user can all delete the user profile.
+
+- Community Blog
+    - In order to connect all the users together, a user can post a message and other users can reply to it.
+    All posts are visible to all the users.
+    - User can delete or update only their posts and replies.
 
 ## Tech Stack
 
@@ -65,8 +75,9 @@ Prerequisites:
 - Node.js (>= 16.x)
 - API Key and API ID for accessing Edaman Food Databse
 - Postgres SQL
+  (if cloud deployment required, )
 - GCP with necessary permissions
-- Terraform to deploy on GCP 
+- Docker to deploy on GCP 
 
 Clone the repository:
 
@@ -148,6 +159,4 @@ The application is deployed using GitHub Actions and Google Cloud Run. The deplo
 
 To deploy the application, push changes to the `main` branch or manually trigger the workflow using the GitHub Actions interface.
 
-## Contributing
-
-Contributions are welcome! Please open an issue or submit a pull request for any changes.
+Currently it is deployed in https://fit-frenzy-frontend-630243095989.europe-west1.run.app/
