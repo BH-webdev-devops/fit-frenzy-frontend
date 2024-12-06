@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import ReactPlayer from "react-player";
 import { useRouter } from "next/navigation";
