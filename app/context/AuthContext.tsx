@@ -21,7 +21,11 @@ interface AuthContextType {
   updateProfile: (formData: object) => void;
   setLoading: (loading: boolean) => void;
   setIsAuth: (isAuth: boolean) => void;
-  forgotPassword: (email: string, birthdate: string, newPassword: string) => Promise<void>;
+  forgotPassword: (
+    email: string,
+    birthdate: string,
+    newPassword: string
+  ) => Promise<void>;
   setAdmin: (isAdmin: boolean) => void;
 }
 
@@ -40,21 +44,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const host = process.env.NEXT_PUBLIC_API_URL;
   const router = useRouter();
 
-  const isTokenExpired = (token: string | null): boolean => {
-    if (!token) return true;
-    try {
-      const decoded: any = jwtDecode(token);
-      const currentTime = Math.floor(Date.now() / 1000);
-      return decoded.exp < currentTime;
-    } catch (error) {
-      console.error(error);
-      return true;
-    }
+  const isTokenExpired = (token: string): boolean => {
+    const decoded: any = jwtDecode(token);
+    const currentTime = Math.floor(Date.now() / 1000);
+    return decoded.exp < currentTime;
   };
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    if (isTokenExpired(token)) {
+    if (token && isTokenExpired(token)) {
       logout();
     }
   }, []);
@@ -251,7 +249,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     router.push("/login");
   };
 
-  const forgotPassword = async (email: string, birthdate: string, newPassword: string) => {
+  const forgotPassword = async (
+    email: string,
+    birthdate: string,
+    newPassword: string
+  ) => {
     const res = await fetch("${host}/api/forgot-password", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -284,7 +286,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         forgotPassword,
         quotes,
         isAdmin,
-        setAdmin
+        setAdmin,
       }}
     >
       {children}

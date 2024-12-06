@@ -12,7 +12,7 @@ const navigation = [
   { name: "Profile", href: "/profile" },
   { name: "Workouts", href: "/workout" },
   { name: "Progress", href: "/progress" },
-  { name: "Community", href: "/community" }
+  { name: "Community", href: "/community" },
 ];
 
 export default function Navbar() {
@@ -32,8 +32,8 @@ export default function Navbar() {
         className="flex max-w-7xl items-center justify-between gap-x-6 "
       >
         <div className="flex">
-          <Link href="/" className="m-1.5 p-1.5 ml-12">
-            <img alt="FitFrenzy Logo" src="/F.png" className="w-32 h-28" />
+          <Link href="/" className="px-1.5 ml-12 pt-2">
+            <img alt="FitFrenzy Logo" src="/F.png" className="w-28 h-24" />
           </Link>
         </div>
         <div className="flex items-center justify-end gap-x-6">
@@ -65,7 +65,10 @@ export default function Navbar() {
                   </a>
                 ))}
                 {isAdmin ? (
-                  <a href="/admin" className="text-lg font-semibold text-gray-900">
+                  <a
+                    href="/admin"
+                    className="text-lg font-semibold text-gray-900"
+                  >
                     Admin
                   </a>
                 ) : null}
@@ -84,7 +87,7 @@ export default function Navbar() {
           <button
             type="button"
             onClick={() => setMobileMenuOpen(true)}
-            className="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-700"
+            className="m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-700"
           >
             <span className="sr-only">Open main menu</span>
             <Bars3Icon aria-hidden="true" className="h-6 w-6" />

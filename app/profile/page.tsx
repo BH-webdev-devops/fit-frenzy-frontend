@@ -9,6 +9,8 @@ import {
   FaRuler,
   FaMapMarkerAlt,
   FaRegUserCircle,
+  FaUser,
+  FaEnvelope,
 } from "react-icons/fa";
 
 const formatDate = (dateString: string) => {
@@ -452,6 +454,18 @@ export default function Profile() {
                     Profile Information
                   </h2>
                   <div className="grid grid-cols-2 gap-y-4 text-left">
+                    <div className="text-gray-200 font-medium flex items-center">
+                      <FaUser className="mr-2 text-blue-500" /> Name:
+                    </div>
+                    <div className="text-white">
+                      {user.name || "Not specified"}
+                    </div>
+                    <div className="text-gray-200 font-medium flex items-center">
+                      <FaEnvelope className="mr-2 text-blue-500" /> Email:
+                    </div>
+                    <div className="text-white">
+                      {user.email || "Not specified"}
+                    </div>
                     <div className="text-gray-200 font-medium flex items-center">
                       <FaTransgenderAlt className="mr-2 text-blue-500" />{" "}
                       Gender:
