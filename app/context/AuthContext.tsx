@@ -236,7 +236,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setUser(data.user);
       setIsLoggedIn(true);
       setIsAuth(true);
-      console.log("admin data---------", data.user.admin);
       setAdmin(data.user.admin);
       await fetchProfile();
     }
